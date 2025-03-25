@@ -1,0 +1,3 @@
+treeminer
+pytest
+pytest-cov
