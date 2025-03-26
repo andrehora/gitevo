@@ -5,14 +5,13 @@ from datetime import date, datetime
 from collections import Counter
 
 from tree_sitter import Node
-from git.repo.fun import is_git_dir
 from treeminer.repo import TreeMinerRepo, Commit
 from treeminer.miners import BaseMiner
 
 from gitevo.model import GitEvoResult, ProjectResult, CommitResult, MetricResult
 from gitevo.info import MetricInfo, BeforeCommitInfo
 from gitevo.report_html import HtmlReport
-from gitevo.utils import stdout_msg, stdout_link, as_str, aggregate_stat
+from gitevo.utils import is_git_dir, stdout_msg, stdout_link, as_str, aggregate_stat
 from gitevo.exceptions import *
           
 class GitEvo:
@@ -290,9 +289,13 @@ class ParsedCommit:
         self.hash = hash
         self.date = date
         self.file_extension = file_extension
-        self.parsed_files = parsed_files
+        self._parsed_files = parsed_files
         self._nodes = None
         self._loc = None
+
+    @property
+    def parsed_files(self) -> list[ParsedFile]:
+        return self._parsed_files
 
     @property
     def nodes(self) -> list[Node]:
@@ -300,29 +303,23 @@ class ParsedCommit:
             self._nodes = [node for file in self.parsed_files for node in file.nodes]
         return self._nodes
     
+    def count_nodes(self, node_types: list[str] = None) -> int:
+        if node_types is None:
+            return len(self.nodes)
+        return len(self.find_nodes_by_type(node_types))
+    
     @property
     def loc(self) -> int:
         if self._loc is None:
             self._loc = sum([file.loc for file in self.parsed_files])
         return self._loc
     
-    def node_types(self, node_types: list[str] = None) -> list[str]:
-        if node_types is None:
-            return [node.type for node in self.nodes]
-        return [node.type for node in self.nodes if node.type in node_types]
-    
-    def count_nodes(self, node_types: list[str] = None) -> int:
-        if node_types is None:
-            return len(self.nodes)
-        return len(self.find_nodes_by_type(node_types))
-    
-    def loc_for(self, node_type: str, aggregate: str | None = None) -> int | float | list[int]:
+    def loc_by_type(self, node_type: str, aggregate: str | None = None) -> int | float | list[int]:
 
         if aggregate is not None and aggregate not in ['median', 'mean', 'mode']:
             raise BadLOCAggregate(f'LOC aggregate should be median, mean, or mode')
         
         nodes = self.find_nodes_by_type([node_type])
-
         if not nodes:
             return []
 
@@ -332,13 +329,18 @@ class ParsedCommit:
         
         return aggregate_stat(locs, aggregate)
     
+    def find_node_types(self, node_types: list[str] = None) -> list[str]:
+        if node_types is None:
+            return [node.type for node in self.nodes]
+        return [node.type for node in self.nodes if node.type in node_types]
+    
     def find_nodes_by_type(self, node_types: list[str]) -> list[Node]:
         return [node for node in self.nodes if node.type in node_types]
     
-    def named_children(self, node: Node) -> list[Node]:
+    def named_children_for(self, node: Node) -> list[Node]:
         return [each for each in node.children if each.is_named]
     
-    def descendant_nodes(self, node: Node) -> list[Node]:
+    def descendant_nodes_for(self, node: Node) -> list[Node]:
         descendants = []
         def traverse_node(current_node):
             descendants.append(current_node)
@@ -349,7 +351,7 @@ class ParsedCommit:
         return descendants
     
     def descendant_node_by_field_name(self, node: Node, name: str) -> Node | None:
-        for desc_node in self.descendant_nodes(node):
+        for desc_node in self.descendant_nodes_for(node):
             target_node = desc_node.child_by_field_name(name)
             if target_node is not None:
                 return target_node

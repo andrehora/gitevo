@@ -1,7 +1,27 @@
 import sys
 import statistics
+import os
+import os.path as osp
 
 from datetime import date
+from gitevo.exceptions import BadGitRepo
+
+
+def is_git_dir(d: str) -> bool:
+    # From GitPython
+    if osp.isdir(d):
+        if (osp.isdir(osp.join(d, "objects")) or "GIT_OBJECT_DIRECTORY" in os.environ) and osp.isdir(
+            osp.join(d, "refs")
+        ):
+            headref = osp.join(d, "HEAD")
+            return osp.isfile(headref) or (osp.islink(headref) and os.readlink(headref).startswith("refs"))
+        elif (
+            osp.isfile(osp.join(d, "gitdir"))
+            and osp.isfile(osp.join(d, "commondir"))
+            and osp.isfile(osp.join(d, "gitfile"))
+        ):
+            raise BadGitRepo(d)
+    return False
 
 def stdout_msg(text: str) -> str:
     if hasattr(sys.stdout, 'isatty') and sys.stdout.isatty():

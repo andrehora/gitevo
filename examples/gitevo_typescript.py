@@ -15,12 +15,12 @@ def files(commit: ParsedCommit):
 
 @evo.metric('Classes, interfaces, and type aliases', aggregate='sum', categorical=True)
 def type_definitions(commit: ParsedCommit):
-    return commit.node_types(['class_declaration', 'interface_declaration', 'type_alias_declaration'])
+    return commit.find_node_types(['class_declaration', 'interface_declaration', 'type_alias_declaration'])
 
 
 @evo.metric('Variable declarations', aggregate='sum', categorical=True, version_chart='donut')
 def variable_declarations(commit: ParsedCommit):
-    return commit.node_types(['const', 'let', 'var'])
+    return commit.find_node_types(['const', 'let', 'var'])
 
 
 @evo.metric('Variables: typed vs. untyped', aggregate='sum', categorical=True, version_chart='donut')
@@ -30,18 +30,18 @@ def variables(commit: ParsedCommit):
 
 @evo.metric('Types: any vs. unknown', aggregate='sum', categorical=True)
 def expections(commit: ParsedCommit):
-    return commit.node_types(['any', 'unknown'])
+    return commit.find_node_types(['any', 'unknown'])
 
 
 @evo.metric('Function/methods', aggregate='sum', categorical=True)
 def function_definitions(commit: ParsedCommit):
     nodes = ['function_declaration', 'method_definition', 'generator_function_declaration', 'arrow_function', 'generator_function', 'function_expression']
-    return commit.node_types(nodes)
+    return commit.find_node_types(nodes)
 
 
 @evo.metric('Function/method signatures', aggregate='sum', categorical=True)
 def signatures(commit: ParsedCommit):
-    return commit.node_types(['function_signature', 'method_signature', 'abstract_method_signature'])
+    return commit.find_node_types(['function_signature', 'method_signature', 'abstract_method_signature'])
 
 
 @evo.metric('Function/method return types', aggregate='sum', categorical=True, version_chart='donut')
@@ -59,27 +59,27 @@ def parameters(commit: ParsedCommit):
 
 @evo.metric('Parameters: required vs. optional', aggregate='sum', categorical=True, version_chart='donut')
 def req_opt_parameters(commit: ParsedCommit):
-    return commit.node_types(['required_parameter', 'optional_parameter'])
+    return commit.find_node_types(['required_parameter', 'optional_parameter'])
 
 
 @evo.metric('Conditionals', aggregate='sum', categorical=True)
 def conditionals(commit: ParsedCommit):
-    return commit.node_types(['if_statement', 'switch_statement', 'ternary_expression'])
+    return commit.find_node_types(['if_statement', 'switch_statement', 'ternary_expression'])
 
 
 @evo.metric('Loops', aggregate='sum', categorical=True, version_chart='donut')
 def loops(commit: ParsedCommit):
-    return commit.node_types(['for_statement', 'while_statement', 'for_in_statement', 'do_statement'])
+    return commit.find_node_types(['for_statement', 'while_statement', 'for_in_statement', 'do_statement'])
 
 
 @evo.metric('continue vs. break', aggregate='sum', categorical=True)
 def continue_break(commit: ParsedCommit):
-    return commit.node_types(['break_statement', 'continue_statement'])
+    return commit.find_node_types(['break_statement', 'continue_statement'])
 
 
 @evo.metric('Exception statements', aggregate='sum', categorical=True)
 def expections(commit: ParsedCommit):
-    return commit.node_types(['try_statement', 'throw_statement'])
+    return commit.find_node_types(['try_statement', 'throw_statement'])
 
 
 @evo.metric('Await expression', aggregate='sum')
