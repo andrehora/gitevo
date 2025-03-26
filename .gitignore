@@ -1,7 +1,7 @@
 playground.py
-index.html
 .DS_Store
-projects_*
+.vscode
+index*.html
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

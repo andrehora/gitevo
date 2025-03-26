@@ -1,5 +1,5 @@
 from datetime import date
-from gitevo import DateUtils
+from gitevo.utils import DateUtils
 
 def test_date_range_year():
     DateUtils.date_unit = 'year'

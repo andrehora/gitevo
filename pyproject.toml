@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gitevo"
+description = "Code evolution analysis for Git repositories"
+authors = [
+  { name="Andre Hora", email="andrehoraa@gmail.com" },
+]
+license = "MIT"
+readme = "README.md"
+version = "0.1"
+
+[project.urls]
+"Homepage" = "https://github.com/andrehora/gitevo"
+"Bug Tracker" = "https://github.com/andrehora/gitevo/issues"

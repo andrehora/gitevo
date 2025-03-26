@@ -6,7 +6,7 @@ from git import Repo
 
 @pytest.fixture(scope='module')
 def local_repo():
-    local_repo_path = 'spotflow'
+    local_repo_path = 'testrepo'
     Repo.clone_from(url='https://github.com/andrehora/testrepo', to_path=local_repo_path)
     yield local_repo_path
     shutil.rmtree(local_repo_path)
@@ -74,7 +74,7 @@ def test_metric_data(evo):
     assert len(result.project_results) == 1
 
     project_result = result.project_results[0]
-    assert project_result.name == 'spotflow'
+    assert project_result.name == 'testrepo'
     assert len(project_result.commit_results) > 0
 
     commit_result = project_result.commit_results[0]

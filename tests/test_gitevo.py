@@ -3,7 +3,8 @@ import os
 import shutil
 
 from datetime import date
-from gitevo import GitEvo, BadGitRepo, BadDateUnit, BadYearRange
+from gitevo import GitEvo
+from gitevo.exceptions import BadGitRepo, BadDateUnit, BadYearRange
 
 testrepo = 'https://github.com/andrehora/testrepo'
 
