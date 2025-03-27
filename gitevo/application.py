@@ -248,6 +248,7 @@ class GitEvo:
         raise BadGitRepo('Invalid repository')
     
     def _check_registered_metrics(self, metric_info: MetricInfo):
+        
         if self.global_file_extension is None and metric_info.file_extension is None:
             raise FileExtensionNotFound(f'file_extension should be defined globally or in metric {metric_info.name}')
             
@@ -303,7 +304,7 @@ class ParsedCommit:
             self._nodes = [node for file in self.parsed_files for node in file.nodes]
         return self._nodes
     
-    def count_nodes(self, node_types: list[str] = None) -> int:
+    def count_nodes(self, node_types: str | list[str] | None = None) -> int:
         if node_types is None:
             return len(self.nodes)
         return len(self.find_nodes_by_type(node_types))
@@ -334,7 +335,11 @@ class ParsedCommit:
             return [node.type for node in self.nodes]
         return [node.type for node in self.nodes if node.type in node_types]
     
-    def find_nodes_by_type(self, node_types: list[str]) -> list[Node]:
+    def find_nodes_by_type(self, node_types: str | list[str]) -> list[Node]:
+
+        if isinstance(node_types, str):
+            node_types = [node_types]
+
         return [node for node in self.nodes if node.type in node_types]
     
     def named_children_for(self, node: Node) -> list[Node]:
