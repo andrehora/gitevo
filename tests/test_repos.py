@@ -8,13 +8,20 @@ from gitevo import GitEvo
 
 def test_single_remote_repository():
 
+    remove_folder_if_exists('testrepo')
+
     remote_repo = 'https://github.com/andrehora/testrepo'
     evo = GitEvo(repo=remote_repo, extension='.py')
     result = evo.run()
 
     assert len(result.project_results) == 1
 
+    remove_folder_if_exists('testrepo')
+
 def test_multiple_remote_repositories():
+
+    remove_folder_if_exists('testrepo')
+    remove_folder_if_exists('lib')
 
     remote_repos = ['https://github.com/andrehora/testrepo', 'https://github.com/andrehora/lib']
     evo = GitEvo(repo=remote_repos, extension='.py')
@@ -22,46 +29,30 @@ def test_multiple_remote_repositories():
 
     assert len(result.project_results) == 2
 
-def test_single_local_repository():
+    remove_folder_if_exists('testrepo')
+    remove_folder_if_exists('lib')
 
-    local_repo = 'testrepo'
-    remove_folder_if_exists(local_repo)
-    Repo.clone_from(url='https://github.com/andrehora/testrepo', to_path=local_repo)
-
-    evo = GitEvo(repo=local_repo, extension='.py')
-    result = evo.run()
-
-    assert len(result.project_results) == 1
-
-    remove_folder_if_exists(local_repo)
-
-def test_multiple_local_repositories():
-
-    local_repos = ['testrepo', 'lib']
-    remove_folder_if_exists(local_repos[0])
-    remove_folder_if_exists(local_repos[1])
-
-    Repo.clone_from(url='https://github.com/andrehora/testrepo', to_path='testrepo')
-    Repo.clone_from(url='https://github.com/andrehora/lib', to_path='lib')
-
-    evo = GitEvo(repo=local_repos, extension='.py')
-    result = evo.run()
-
-    assert len(result.project_results) == 2
-
-    remove_folder_if_exists(local_repos[0])
-    remove_folder_if_exists(local_repos[1])
-
-def test_folder_with_multiple_repositories():
+def test_local_repositories():
 
     folder_name = 'projects'
     remove_folder_if_exists(folder_name)
     Repo.clone_from(url='https://github.com/andrehora/testrepo', to_path='projects/testrepo')
     Repo.clone_from(url='https://github.com/andrehora/lib', to_path='projects/lib')
 
-    evo = GitEvo(repo=folder_name, extension='.py')
+    evo = GitEvo(repo='projects/testrepo', extension='.py')
     result = evo.run()
+    assert len(result.project_results) == 1
 
+    evo = GitEvo(repo='projects/lib', extension='.py')
+    result = evo.run()
+    assert len(result.project_results) == 1
+
+    evo = GitEvo(repo=['projects/testrepo', 'projects/lib'], extension='.py')
+    result = evo.run()
+    assert len(result.project_results) == 2
+
+    evo = GitEvo(repo='projects', extension='.py')
+    result = evo.run()
     assert len(result.project_results) == 2
 
     remove_folder_if_exists(folder_name)
