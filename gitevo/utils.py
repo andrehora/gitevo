@@ -76,6 +76,7 @@ class DateUtils:
 
     @staticmethod
     def _generate_months(start_date: date, end_date: date, step: int = 1) -> list[date]:
+        
         start_month = start_date.month
         start_year = start_date.year
         end_month = end_date.month

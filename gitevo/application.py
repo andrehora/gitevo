@@ -139,6 +139,7 @@ class GitEvo:
 
             if not self.last_version_only:
                 # Skip commit based on from and to year 
+                print(commit.committer_date.year, self.from_year)
                 if commit.committer_date.year < self.from_year:
                     continue
                 if commit.committer_date.year > self.to_year:

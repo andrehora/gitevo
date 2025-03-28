@@ -18,9 +18,6 @@ class MetricEvolution:
     def dates_and_values(self):
         return list(zip(self.dates, self.values))
     
-    def __str__(self):
-        return f'{self.name} {str(self.values)}'
-    
 class MetricResult:
 
     def __init__(self, name: str, value: int | float, date: date, is_list: bool = False):
@@ -49,7 +46,7 @@ class ProjectResult:
         self.commit_results.append(commit_result)
 
     def metric_evolution(self, metric_name: str) -> MetricEvolution:    
-        dates = self.date_steps()
+        dates = self.compute_date_steps()
         values = []
         
         metric_results = sorted(self._metric_results(metric_name), key=lambda m: m.date, reverse=True)
@@ -70,7 +67,7 @@ class ProjectResult:
         dates = DateUtils.formatted_dates(dates)
         return MetricEvolution(metric_name, dates, values)
     
-    def date_steps(self) -> list[date]:
+    def compute_date_steps(self) -> list[date]:
         first_commit_date = self.commit_results[0].date
         last_commit_date = self.commit_results[-1].date
         # last_commit_date = date.today()
@@ -140,7 +137,7 @@ class GitEvoResult:
     def _date_steps(self) -> list[date]:
         dates = set()
         for project_result in self.project_results:
-            project_dates = project_result.date_steps()
+            project_dates = project_result.compute_date_steps()
             dates.update(project_dates)
         return sorted(list(dates))
 
