@@ -6,8 +6,6 @@ extension = '.py'
     
 def metrics(evo: GitEvo):
 
-    from gitevo.reports.fastapi import FastAPICommit
-
     @evo.before(file_extension='.py')
     def before(commit: ParsedCommit):
         return FastAPICommit(commit)
