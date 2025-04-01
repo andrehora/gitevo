@@ -20,9 +20,9 @@ class GitEvo:
                 *,
                 repo: str | list[str],
                 extension: str | None = None, 
-                date_unit: str = 'year', 
                 from_year: int | None = None,
                 to_year: int | None = None,
+                date_unit: str = 'year', 
                 last_version_only: bool = False,
                 report_title: str | None = None,
                 report_filename: str = 'index.html'):
@@ -46,9 +46,9 @@ class GitEvo:
         self.date_unit = date_unit
         self.from_year = from_year
         self.to_year = to_year
+        self.last_version_only = last_version_only
         self.report_title = report_title
         self.report_filename = report_filename.strip()
-        self.last_version_only = last_version_only
 
         self.registered_metrics: list[MetricInfo] = []
         self.registered_before_commits: list[BeforeCommitInfo] = []
@@ -133,8 +133,6 @@ class GitEvo:
             # Create new project result if new project name
             if project_name != commit.project_name:
                 print(commit.project_name)
-                if self.report_title is None:
-                    result.report_title = commit.project_name
                 project_name = commit.project_name
                 project_commits = set()
                 project_result = ProjectResult(commit.project_name)
@@ -333,9 +331,13 @@ class ParsedCommit:
         
         return aggregate_stat(locs, aggregate)
     
-    def find_node_types(self, node_types: list[str] = None) -> list[str]:
+    def find_node_types(self, node_types: str | list[str] = None) -> list[str]:
         if node_types is None:
             return [node.type for node in self.nodes]
+
+        if isinstance(node_types, str):
+            node_types = [node_types]    
+    
         return [node.type for node in self.nodes if node.type in node_types]
     
     def find_nodes_by_type(self, node_types: str | list[str]) -> list[Node]:

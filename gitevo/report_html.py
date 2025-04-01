@@ -13,7 +13,8 @@ class HtmlReport:
     CREATED_DATE_PLACEHOLDER = '{{CREATED_DATE}}'
 
     def __init__(self, result: GitEvoResult):
-        self.report_title = result.report_title
+
+        self.report_title = self._ensure_title(result)
         self.report_filename = result.report_filename
         self.metric_dates = result.metric_dates
         self.metric_groups = result.metric_groups
@@ -31,6 +32,13 @@ class HtmlReport:
         content = self._replace_created_date(content)
         self._write_html(content)
         return os.path.join(os.getcwd(), self.report_filename)
+    
+    def _ensure_title(self, result: GitEvoResult) -> str:
+        if result.report_title is None:
+            if len(result.project_results) == 1:
+                return result.project_results[0].name
+            return 'Multiple projects...'
+        return result.report_title
 
     def _json_data(self):
         return self._build_charts()

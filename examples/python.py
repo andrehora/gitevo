@@ -63,13 +63,13 @@ def definitions(commit: ParsedCommit):
     return classmethods + staticmethods
 
 
-@evo.metric('Functions: def vs. async def', categorical=True, aggregate='sum', version_chart_type='donut')
+@evo.metric('Functions: def vs. async def', categorical=True, aggregate='sum')
 def sync_async(commit: ParsedCommit):
     function_definitions = commit.find_nodes_by_type(['function_definition'])
     return ['async def' if as_str(func.child(0).text) == 'async' else 'def' for func in function_definitions]
 
 
-@evo.metric('Functions: return types', categorical=True, aggregate='sum', version_chart_type='donut')
+@evo.metric('Functions: return types', categorical=True, aggregate='sum')
 def return_types(commit: ParsedCommit):
     function_definitions = commit.find_nodes_by_type(['function_definition'])
     return ['return_type' if func.child_by_field_name('return_type') else 'no return_type' for func in function_definitions]

@@ -1,10 +1,9 @@
 import argparse
-
 from gitevo import GitEvo
-from gitevo.metrics import python_metrics
+from gitevo.cli_reports import report_mappings
+
 
 OK, ERR = 0, 1
-
 
 def parse_args(args=None):
 
@@ -17,11 +16,12 @@ def parse_args(args=None):
     )
 
     parser.add_argument(
-        '-e',
-        '--extension',
-        default='.py',
+        '-r',
+        '--report-type',
+        default='python',
+        choices=['python', 'js', 'ts', 'java', 'fastapi'],
         type=str,
-        help='Extension of the files to be analyzed. It supports py, js, ts, and java. Default is py.'
+        help='Report type to be generated. Default is python.'
     )
 
     parser.add_argument(
@@ -55,7 +55,7 @@ class GitEvoCLI:
         parsed_args = parse_args(args)
 
         self.repo = parsed_args.repo
-        self.extension = parsed_args.extension
+        self.report_type = parsed_args.report_type
         self.from_year = parsed_args.from_year
         self.to_year = parsed_args.to_year
         self.date_unit = 'year'
@@ -63,18 +63,12 @@ class GitEvoCLI:
             self.date_unit = 'month'
 
     def run(self):
-        if not self.repo:
-            print('Nothing to run...')
-            return OK
-        
-        evo = GitEvo(repo=self.repo, 
-                     extension=self.extension, 
-                     from_year=self.from_year, 
-                     to_year=self.to_year,
-                     date_unit=self.date_unit)
-        python_metrics(evo)
-        evo.run()
 
+        report = report_mappings.get(self.report_type)
+        evo = GitEvo(repo=self.repo, extension=report.extension, from_year=self.from_year, 
+                     to_year=self.to_year, date_unit=self.date_unit)
+        report.metrics(evo)
+        evo.run()
         return OK
 
 def main():
