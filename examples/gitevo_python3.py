@@ -12,9 +12,9 @@ def ratio(a: int, b: int) -> int:
 
 KLOC_FACTOR = 1000
 
-evo = GitEvo(title='Python', html_filename='index_python.html', 
-             repo='./projects_python/cli', extension='.py', 
-             date_unit='year', from_year=2015)
+evo = GitEvo(report_title='Python', report_name='index_python.html', 
+             repo='../projects/python/rich', extension='.py', 
+             date_unit='year', from_year=2020)
 # evo.add_language('.py', tree_sitter_python.language())
 
 
@@ -161,13 +161,11 @@ def imports(commit: ParsedCommit):
 @evo.metric('__getattr__', aggregate='median', group='__getattr__ vs. __getattribute__')
 def imports(commit: ParsedCommit):
     getattr_count = _getattr_count(commit)
-    getattribute_count = _getattribute_count(commit)
     total = commit.loc / KLOC_FACTOR
     return ratio(getattr_count, total)
 
 @evo.metric('__getattribute__', aggregate='median', group='__getattr__ vs. __getattribute__')
 def imports(commit: ParsedCommit):
-    getattr_count = _getattr_count(commit)
     getattribute_count = _getattribute_count(commit)
     total = commit.loc / KLOC_FACTOR
     return ratio(getattribute_count, total)

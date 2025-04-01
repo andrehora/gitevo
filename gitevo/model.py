@@ -83,10 +83,10 @@ class ProjectResult:
 
 class GitEvoResult:
 
-    def __init__(self, title: str, html_filename: str, date_unit: str, 
+    def __init__(self, report_title: str, report_filename: str, date_unit: str, 
                  registered_metrics: list[MetricInfo], last_version_only: bool):
-        self.title = title
-        self.html_filename = html_filename
+        self.report_title = report_title
+        self.report_filename = report_filename
         self.registered_metrics = registered_metrics
         self.last_version_only = last_version_only
         DateUtils.date_unit = date_unit

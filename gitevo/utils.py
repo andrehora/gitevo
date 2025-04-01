@@ -49,6 +49,14 @@ def aggregate_stat(values: list[int|float], measure: str) -> int | float:
     result = operation(values)
     return round(result, 1)
 
+def ensure_file_extension(extension: str | None):
+    if extension is None:
+        return None
+    if not extension.startswith('.'):
+        return f'.{extension}'
+    return extension
+    
+
 class DateUtils:
 
     date_unit: str = 'year'

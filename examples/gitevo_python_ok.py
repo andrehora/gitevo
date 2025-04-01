@@ -1,6 +1,7 @@
 from gitevo import GitEvo, ParsedCommit
 
-evo = GitEvo(repo='../projects/python/rich', extension='.py', html_filename='index_python.html', from_year=2020, date_unit='year')
+evo = GitEvo(repo='../projects/python/flask', extension='.py', 
+             report_name='index_python.html', from_year=2015, date_unit='year')
 
 
 @evo.metric('Lines of code (LOC)', show_version_chart=False)

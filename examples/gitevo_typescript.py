@@ -3,7 +3,7 @@ from gitevo import GitEvo, ParsedCommit
 def as_str(text: bytes) -> str:
     return text.decode('utf-8')
 
-evo = GitEvo(title='TypeScript', html_filename='index_ts.html', 
+evo = GitEvo(report_title='TypeScript', report_name='index_ts.html', 
              repo='./projects_typescript', extension='.ts',
              date_unit='year', from_year=2020)
 

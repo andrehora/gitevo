@@ -8,9 +8,9 @@ def ratio(a: int, b: int) -> int:
         return 0
     return round(a/b, 2)
 
-evo = GitEvo(title='JavaScript', html_filename='index_js.html', 
-             repo='./projects_javascript/express', extension='.js', 
-             date_unit='year', from_year=2015)
+evo = GitEvo(report_title='JavaScript', report_name='index_js.html', 
+             repo='../projects/javascript/svelte', extension='.js', 
+             date_unit='year', from_year=2020)
 
 
 
@@ -21,6 +21,16 @@ def files(commit: ParsedCommit):
 @evo.metric('LOC', aggregate='sum', show_version_chart=False)
 def files(commit: ParsedCommit):
     return commit.loc
+
+
+
+@evo.metric('==', aggregate='sum', group='equality (total)')
+def dataclass(commit: ParsedCommit):
+    return commit.count_nodes('==')
+
+@evo.metric('===', aggregate='sum', group='equality (total)')
+def namedtuple(commit: ParsedCommit):
+    return commit.count_nodes('===')
 
 
 

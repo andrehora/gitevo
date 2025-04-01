@@ -11,7 +11,7 @@ from treeminer.miners import BaseMiner
 from gitevo.model import GitEvoResult, ProjectResult, CommitResult, MetricResult
 from gitevo.info import MetricInfo, BeforeCommitInfo
 from gitevo.report_html import HtmlReport
-from gitevo.utils import is_git_dir, stdout_msg, stdout_link, as_str, aggregate_stat
+from gitevo.utils import is_git_dir, stdout_msg, stdout_link, as_str, aggregate_stat, ensure_file_extension
 from gitevo.exceptions import *
           
 class GitEvo:
@@ -23,9 +23,10 @@ class GitEvo:
                 date_unit: str = 'year', 
                 from_year: int | None = None,
                 to_year: int | None = None,
-                title: str = 'GitEvo',
-                html_filename: str = 'index.html',
-                last_version_only: bool = False):
+                last_version_only: bool = False,
+                report_title: str | None = None,
+                report_filename: str = 'index.html'):
+                
                         
         self.project_repos = self._check_git_projects(repo)
         
@@ -41,12 +42,12 @@ class GitEvo:
         if from_year > to_year:
             raise BadYearRange(f'from_year must be equal or smaller than to_year')
 
-        self.global_file_extension = extension
+        self.global_file_extension = ensure_file_extension(extension)
         self.date_unit = date_unit
         self.from_year = from_year
         self.to_year = to_year
-        self.title = title.strip()
-        self.html_filename = html_filename.strip()
+        self.report_title = report_title
+        self.report_filename = report_filename.strip()
         self.last_version_only = last_version_only
 
         self.registered_metrics: list[MetricInfo] = []
@@ -83,7 +84,7 @@ class GitEvo:
             self.registered_metrics.append(
                 MetricInfo(name=name, 
                            callback=func,
-                           file_extension=extension,
+                           file_extension=ensure_file_extension(extension),
                            categorical=categorical,
                            aggregate=aggregate,
                            group=group,
@@ -106,7 +107,7 @@ class GitEvo:
     
     def _compute_metrics(self) -> GitEvoResult:
 
-        result = GitEvoResult(self.title, self.html_filename, self.date_unit, self.registered_metrics, self.last_version_only)
+        result = GitEvoResult(self.report_title, self.report_filename, self.date_unit, self.registered_metrics, self.last_version_only)
         
         # Sanity checks on registered_metrics
         for metric_info in self.registered_metrics:
@@ -131,7 +132,9 @@ class GitEvo:
             
             # Create new project result if new project name
             if project_name != commit.project_name:
-                print(f'{commit.project_name}')
+                print(commit.project_name)
+                if self.report_title is None:
+                    result.report_title = commit.project_name
                 project_name = commit.project_name
                 project_commits = set()
                 project_result = ProjectResult(commit.project_name)
@@ -139,7 +142,6 @@ class GitEvo:
 
             if not self.last_version_only:
                 # Skip commit based on from and to year 
-                print(commit.committer_date.year, self.from_year)
                 if commit.committer_date.year < self.from_year:
                     continue
                 if commit.committer_date.year > self.to_year:
@@ -271,7 +273,7 @@ class GitEvo:
     
     def _wrote_msg(self, html_path: str) -> str:
         html_link = stdout_link(html_path, f'file://{html_path}')
-        msg =  f'Wrote HTML report to {html_link}'
+        msg =  f'HTML report written to {html_link}'
         return stdout_msg(msg)
             
     def _all_file_extensions(self) -> set[str]:

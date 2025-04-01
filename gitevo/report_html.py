@@ -13,8 +13,8 @@ class HtmlReport:
     CREATED_DATE_PLACEHOLDER = '{{CREATED_DATE}}'
 
     def __init__(self, result: GitEvoResult):
-        self.title = result.title
-        self.html_filename = result.html_filename
+        self.report_title = result.report_title
+        self.report_filename = result.report_filename
         self.metric_dates = result.metric_dates
         self.metric_groups = result.metric_groups
         self.metric_version_chart_types = result.metric_version_chart_types
@@ -27,23 +27,23 @@ class HtmlReport:
         json_data = self._json_data()
         template = self._read_template()
         content = self._replace_json_data(template, json_data)
-        content = self._replace_title(content, self.title)
+        content = self._replace_title(content, self.report_title)
         content = self._replace_created_date(content)
         self._write_html(content)
-        return os.path.join(os.getcwd(), self.html_filename)
+        return os.path.join(os.getcwd(), self.report_filename)
 
     def _json_data(self):
         return self._build_charts()
 
     def _build_charts(self) -> list[dict]:
         charts = []
-        print('Exported charts:')
+        print('Exported metrics:')
         for group_name, metric_names in self.metric_groups.items():
             assert group_name in self.metric_tops_n
             
             group_evolution = self._find_metric_evolutions(metric_names)
             if not group_evolution:
-                print(f'- Empty data (chart is omitted): {group_name}')
+                print(f'- Empty data (metric is omitted): {group_name}')
                 continue
 
             top_n = self.metric_tops_n[group_name]
@@ -66,10 +66,10 @@ class HtmlReport:
                 charts.append(evo_chart.version_dict(version_chart_type))
                 version_msg = 'version'
             
-            if evo_msg and version_msg: msg = f'{evo_msg} and {version_msg} charts'
-            elif evo_msg: msg = f'{evo_msg} chart'
-            elif version_msg: msg = f'{version_msg} chart'
-            else: msg = 'no chart'
+            if evo_msg and version_msg: msg = f'{evo_msg} and {version_msg}'
+            elif evo_msg: msg = evo_msg
+            elif version_msg: msg = version_msg
+            else: msg = 'no metric!'
             print(f'- OK: {group_name} -> {msg}')
 
         return charts
@@ -83,7 +83,7 @@ class HtmlReport:
         return template
 
     def _write_html(self, html_content):
-        with open(self.html_filename, 'w') as output_file:
+        with open(self.report_filename, 'w') as output_file:
             output_file.write(html_content)
 
     def _replace_json_data(self, source, json_data):

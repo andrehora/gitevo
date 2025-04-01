@@ -222,7 +222,7 @@ class FastAPICommit:
         return self.parsed_commit.find_nodes_by_type(nodes)
 
 
-evo = GitEvo(title='FastAPI', html_filename='index_fastapi.html', 
+evo = GitEvo(report_title='FastAPI', report_name='index_fastapi.html', 
              repo='./projects_fastapi', extension='.py',
              date_unit='year', from_year=2020)
 
