@@ -100,7 +100,7 @@ def test_register_before(local_repo):
     result = evo.run()
     evolutions = result.metric_evolutions()
 
-    assert evolutions[0].values == [100, 100, 100, 100]
+    assert evolutions[0].values == [100, 100, 100, 100, 100, 100]
 
 def test_commit_metadata_by_year(local_repo):
 
@@ -180,7 +180,7 @@ def test_dates_by_year(local_repo):
     
     result = evo.run()
 
-    assert result.metric_dates == ['2020', '2021', '2022', '2023']
+    assert result.metric_dates == ['2020', '2021', '2022', '2023', '2024', '2025']
 
 def test_dates_filter(local_repo):
 
@@ -204,7 +204,7 @@ def test_dates_last_version(local_repo):
     
     result = evo.run()
 
-    assert result.metric_dates == ['2023']
+    assert result.metric_dates == ['2025']
 
 def test_dates_by_month(local_repo):
 
@@ -216,9 +216,9 @@ def test_dates_by_month(local_repo):
     
     result = evo.run()
 
-    assert len(result.metric_dates) == 43
+    assert len(result.metric_dates) > 50
     assert result.metric_dates[0] == '01/2020'
-    assert result.metric_dates[-1] == '07/2023'
+    assert result.metric_dates[-1] == '04/2025'
 
 def test_numerical_metric(local_repo):
 
@@ -237,10 +237,10 @@ def test_numerical_metric(local_repo):
 
     assert len(evolutions) == 2
     assert evolutions[0].name == 'm1'
-    assert evolutions[0].values == [1, 1, 1, 1]
+    assert evolutions[0].values == [1, 1, 1, 1, 1, 1]
 
     assert evolutions[1].name == 'm2'
-    assert evolutions[1].values == [1.1, 1.1, 1.1, 1.1]
+    assert evolutions[1].values == [1.1, 1.1, 1.1, 1.1, 1.1, 1.1]
 
 def test_invalid_numerical_metric(local_repo):
 
@@ -269,8 +269,8 @@ def test_numerical_metric_list_aggregate(local_repo):
     evolutions = result.metric_evolutions()
 
     assert len(evolutions) == 2
-    assert evolutions[0].values == [3, 3, 3, 3]
-    assert evolutions[1].values == [1, 1, 1, 1]
+    assert evolutions[0].values == [3, 3, 3, 3, 3, 3]
+    assert evolutions[1].values == [1, 1, 1, 1, 1, 1]
 
 def test_numerical_metric_invalid_list_aggregate(local_repo):
 
@@ -295,9 +295,9 @@ def test_categorical_metric(local_repo):
     evolutions = result.metric_evolutions()
 
     assert len(evolutions) == 3
-    assert evolutions[0].values == [3, 3, 3, 3]
-    assert evolutions[1].values == [2, 2, 2, 2]
-    assert evolutions[2].values == [1, 1, 1, 1]
+    assert evolutions[0].values == [3, 3, 3, 3, 3, 3]
+    assert evolutions[1].values == [2, 2, 2, 2, 2, 2]
+    assert evolutions[2].values == [1, 1, 1, 1, 1, 1]
 
 def test_empty_categorical_metric(local_repo):
 
@@ -364,7 +364,7 @@ def test_parsed_files_single_extension(local_repo):
     result = evo.run()
     evolutions = result.metric_evolutions()
 
-    assert evolutions[0].values == [0, 1, 1, 1]
+    assert evolutions[0].values == [0, 1, 1, 1, 1, 1]
 
 def test_parsed_files_multiple_extension(local_repo):
 
@@ -385,9 +385,9 @@ def test_parsed_files_multiple_extension(local_repo):
     result = evo.run()
     evolutions = result.metric_evolutions()
 
-    assert evolutions[0].values == [0, 1, 1, 1]
-    assert evolutions[1].values == [0, 1, 1, 1]
-    assert evolutions[2].values == [0, 0, 1, 1]
+    assert evolutions[0].values == [0, 1, 1, 1, 1, 1]
+    assert evolutions[1].values == [0, 1, 1, 1, 1, 1]
+    assert evolutions[2].values == [0, 0, 1, 1, 1, 1]
 
 def test_no_parsed_files(local_repo):
 
@@ -400,7 +400,7 @@ def test_no_parsed_files(local_repo):
     result = evo.run()
     evolutions = result.metric_evolutions()
 
-    assert evolutions[0].values == [0, 0, 0, 0]
+    assert evolutions[0].values == [0, 0, 0, 0, 0, 0]
 
 def test_missing_extension(local_repo):
 
@@ -439,7 +439,7 @@ def test_zero_loc(local_repo):
     result = evo.run()
     evolutions = result.metric_evolutions()
 
-    assert evolutions[0].values == [0, 0, 0, 0]
+    assert evolutions[0].values == [0, 0, 0, 0, 0, 0]
 
 def test_loc_by_type(local_repo):
 

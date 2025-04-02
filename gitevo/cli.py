@@ -71,9 +71,9 @@ class GitEvoCLI:
         evo.run()
         return OK
 
-def main():
+def main(args=None):
     try:
-        status = GitEvoCLI().run()
+        status = GitEvoCLI(args).run()
     except Exception as e:
         print(e)
         status = ERR
