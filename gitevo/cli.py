@@ -45,6 +45,13 @@ def parse_args(args=None):
         help='Set to analyze commits by month.'
     )
 
+    parser.add_argument(
+        '-l',
+        '--last-version-only',
+        action='store_true',
+        help='Set to analyze the last version only.'
+    )
+
     return parser.parse_args(args)
 
 
@@ -58,15 +65,21 @@ class GitEvoCLI:
         self.report_type = parsed_args.report_type
         self.from_year = parsed_args.from_year
         self.to_year = parsed_args.to_year
+        
         self.date_unit = 'year'
         if parsed_args.month:
             self.date_unit = 'month'
+
+        self.last_version_only = False
+        if parsed_args.last_version_only:
+            self.last_version_only = True
+        
 
     def run(self):
 
         report = report_mappings.get(self.report_type)
         evo = GitEvo(repo=self.repo, extension=report.extension, from_year=self.from_year, 
-                     to_year=self.to_year, date_unit=self.date_unit)
+                     to_year=self.to_year, date_unit=self.date_unit, last_version_only=self.last_version_only)
         report.metrics(evo)
         evo.run()
         return OK

@@ -46,12 +46,14 @@ class HtmlReport:
     def _build_charts(self) -> list[dict]:
         charts = []
         print('Exported metrics:')
+        cont = 0
         for group_name, metric_names in self.metric_groups.items():
             assert group_name in self.metric_tops_n
+            cont += 1
             
             group_evolution = self._find_metric_evolutions(metric_names)
             if not group_evolution:
-                print(f'- Empty data (metric is omitted): {group_name}')
+                print(f'{cont} - {group_name} -> no data')
                 continue
 
             top_n = self.metric_tops_n[group_name]
@@ -59,10 +61,6 @@ class HtmlReport:
             # Build chart
             evo_chart = Chart(group_name, self.metric_dates, group_evolution, top_n)
             evo_msg, version_msg = '', ''
-
-            if len(self.metric_dates) >= 2 and not self.last_version_only:
-                charts.append(evo_chart.evo_dict())
-                evo_msg = 'evolution'
 
             # Build last version chart
             assert group_name in self.metric_version_chart_types
@@ -73,12 +71,17 @@ class HtmlReport:
             if show_version_chart:
                 charts.append(evo_chart.version_dict(version_chart_type))
                 version_msg = 'version'
+
+            # Build evolution chart
+            if len(self.metric_dates) >= 2 and not self.last_version_only:
+                charts.append(evo_chart.evo_dict())
+                evo_msg = 'evolution'
             
-            if evo_msg and version_msg: msg = f'{evo_msg} and {version_msg}'
-            elif evo_msg: msg = evo_msg
+            if version_msg and evo_chart: msg = f'{version_msg} and {evo_msg}'
             elif version_msg: msg = version_msg
-            else: msg = 'no metric!'
-            print(f'- OK: {group_name} -> {msg}')
+            elif evo_msg: msg = evo_msg
+            else: msg = 'no data'
+            print(f'{cont} - {group_name} -> {msg}')
 
         return charts
             
