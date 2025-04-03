@@ -7,17 +7,6 @@ from git import Repo
 from gitevo import GitEvo, ParsedCommit
 from gitevo.exceptions import BadReturnType, BadAggregate, BadLOCAggregate, FileExtensionNotFound
 
-def remove_folder_if_exists(folder_name):
-    if os.path.exists(folder_name):
-        shutil.rmtree(folder_name)
-
-@pytest.fixture(scope='module')
-def local_repo():
-    repo_folder = 'testrepo'
-    remove_folder_if_exists(repo_folder)
-    Repo.clone_from(url='https://github.com/andrehora/testrepo', to_path=repo_folder)
-    yield repo_folder
-    remove_folder_if_exists(repo_folder)
 
 def test_register_single_metric(local_repo):
 
@@ -218,7 +207,7 @@ def test_dates_by_month(local_repo):
 
     assert len(result.metric_dates) > 50
     assert result.metric_dates[0] == '01/2020'
-    assert result.metric_dates[-1] == '04/2025'
+    assert result.metric_dates[-1] == '07/2025'
 
 def test_numerical_metric(local_repo):
 
