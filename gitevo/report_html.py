@@ -70,14 +70,14 @@ class HtmlReport:
             show_version_chart = self.metric_show_version_charts[group_name]
             if show_version_chart:
                 charts.append(evo_chart.version_dict(version_chart_type))
-                version_msg = 'version'
+                version_msg = 'last version'
 
             # Build evolution chart
             if len(self.metric_dates) >= 2 and not self.last_version_only:
                 charts.append(evo_chart.evo_dict())
                 evo_msg = 'evolution'
             
-            if version_msg and evo_chart: msg = f'{version_msg} and {evo_msg}'
+            if version_msg and evo_msg: msg = f'{version_msg} and {evo_msg}'
             elif version_msg: msg = version_msg
             elif evo_msg: msg = evo_msg
             else: msg = 'no data'
