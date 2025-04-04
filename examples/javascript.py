@@ -1,7 +1,5 @@
 from gitevo import GitEvo, ParsedCommit
 
-def as_str(text: bytes) -> str:
-    return text.decode('utf-8')
 
 evo = GitEvo(report_title='JavaScript', report_name='index_js.html', 
              repo='./projects_javascript', extension='.js', 
@@ -48,5 +46,8 @@ def await_expression(commit: ParsedCommit):
 @evo.metric('Comments', aggregate='sum', categorical=True)
 def comments(commit: ParsedCommit):
     return commit.find_node_types(['comment'])
+
+def as_str(text: bytes) -> str:
+    return text.decode('utf-8')
 
 evo.run()

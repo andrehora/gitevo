@@ -252,7 +252,7 @@ class GitEvo:
     def _check_registered_metrics(self, metric_info: MetricInfo):
         
         if self.global_file_extension is None and metric_info.file_extension is None:
-            raise FileExtensionNotFound(f'file_extension should be defined globally or in metric {metric_info.name}')
+            raise FileExtensionNotFound(f'extension should be defined globally or in metric {metric_info.name}')
             
         if metric_info.aggregate not in ['median', 'mean', 'mode', 'sum', 'max', 'min']:
             raise BadAggregate(f'aggregate in metric {metric_info.name} should be median, mean, mode, sum, max, or min, not {metric_info.aggregate}')

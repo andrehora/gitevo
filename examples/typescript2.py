@@ -1,17 +1,9 @@
 from gitevo import GitEvo, ParsedCommit
 
-def as_str(text: bytes) -> str:
-    return text.decode('utf-8')
-
-def ratio(a: int, b: int) -> int:
-    if b == 0:
-        return 0
-    return round(a/b, 2)
 
 evo = GitEvo(report_title='TypeScript', report_name='index_ts.html', 
              repo='../projects/typescript/vscode', extension='.ts',
              date_unit='year', from_year=2020)
-
 
 @evo.metric('TypeScript files', aggregate='sum', show_version_chart=False)
 def files(commit: ParsedCommit):
@@ -21,7 +13,6 @@ def files(commit: ParsedCommit):
 def files(commit: ParsedCommit):
     return commit.loc
 
-
 @evo.metric('==', aggregate='sum', group='equality (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes('==')
@@ -30,8 +21,6 @@ def dataclass(commit: ParsedCommit):
 def namedtuple(commit: ParsedCommit):
     return commit.count_nodes('===')
 
-
-
 @evo.metric('var total', aggregate='sum', group='let vs. var (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['var'])
@@ -39,8 +28,6 @@ def dataclass(commit: ParsedCommit):
 @evo.metric('let total', aggregate='sum', group='let vs. var (total)')
 def namedtuple(commit: ParsedCommit):
     return commit.count_nodes(['let'])
-
-
 
 @evo.metric('var', aggregate='median', group='let vs. var')
 def variable_declarations(commit: ParsedCommit):
@@ -54,8 +41,6 @@ def variable_declarations(commit: ParsedCommit):
     total = commit.loc / 1000
     return ratio(let_count, total)
 
-
-
 @evo.metric('arrow function total', aggregate='sum', group='functions (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['arrow_function'])
@@ -67,8 +52,6 @@ def dataclass(commit: ParsedCommit):
 @evo.metric('function expression total', aggregate='sum', group='functions (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['function_expression'])
-
-
 
 @evo.metric('arrow function', aggregate='median', group='functions')
 def definitions(commit: ParsedCommit):
@@ -88,8 +71,6 @@ def definitions(commit: ParsedCommit):
     total = commit.loc / 1000
     return ratio(function_expression_count, total)
 
-
-
 @evo.metric('interface total', aggregate='sum', group='interface vs. type (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['interface_declaration'])
@@ -97,8 +78,6 @@ def dataclass(commit: ParsedCommit):
 @evo.metric('type total', aggregate='sum', group='interface vs. type (total)')
 def namedtuple(commit: ParsedCommit):
     return commit.count_nodes(['type_alias_declaration'])
-
-
 
 @evo.metric('interface', aggregate='median', group='interface vs. type')
 def type_definitions(commit: ParsedCommit):
@@ -112,8 +91,6 @@ def type_definitions(commit: ParsedCommit):
     total = commit.loc / 1000
     return ratio(type_count, total)
 
-
-
 @evo.metric('any total', aggregate='sum', group='any vs. unknown (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['any'])
@@ -121,8 +98,6 @@ def dataclass(commit: ParsedCommit):
 @evo.metric('unknown total', aggregate='sum', group='any vs. unknown (total)')
 def namedtuple(commit: ParsedCommit):
     return commit.count_nodes(['unknown'])
-
-
 
 @evo.metric('any', aggregate='median', group='any vs. unknown')
 def type_definitions(commit: ParsedCommit):
@@ -136,5 +111,12 @@ def type_definitions(commit: ParsedCommit):
     total = commit.loc / 1000
     return ratio(unknown_count, total)
 
+def as_str(text: bytes) -> str:
+    return text.decode('utf-8')
+
+def ratio(a: int, b: int) -> int:
+    if b == 0:
+        return 0
+    return round(a/b, 2)
 
 evo.run()

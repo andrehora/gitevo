@@ -1,18 +1,9 @@
 from gitevo import GitEvo, ParsedCommit
 
-def as_str(text: bytes) -> str:
-    return text.decode('utf-8')
-
-def ratio(a: int, b: int) -> int:
-    if b == 0:
-        return 0
-    return round(a/b, 2)
 
 evo = GitEvo(report_title='JavaScript', report_name='index_js.html', 
              repo='../projects/javascript/svelte', extension='.js', 
              date_unit='year', from_year=2020)
-
-
 
 @evo.metric('JavaScript files', aggregate='sum', show_version_chart=False)
 def files(commit: ParsedCommit):
@@ -21,8 +12,6 @@ def files(commit: ParsedCommit):
 @evo.metric('LOC', aggregate='sum', show_version_chart=False)
 def files(commit: ParsedCommit):
     return commit.loc
-
-
 
 @evo.metric('==', aggregate='sum', group='equality (total)')
 def dataclass(commit: ParsedCommit):
@@ -56,8 +45,6 @@ def variable_declarations(commit: ParsedCommit):
     total = commit.loc / 1000
     return ratio(let_count, total)
 
-
-
 @evo.metric('arrow function total', aggregate='sum', group='functions (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['arrow_function'])
@@ -69,8 +56,6 @@ def dataclass(commit: ParsedCommit):
 @evo.metric('function expression total', aggregate='sum', group='functions (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['function_expression'])
-
-
 
 @evo.metric('arrow function', aggregate='median', group='functions')
 def definitions(commit: ParsedCommit):
@@ -89,5 +74,13 @@ def definitions(commit: ParsedCommit):
     function_expression_count = commit.count_nodes(['function_expression'])
     total = commit.loc / 1000
     return ratio(function_expression_count, total)
+
+def as_str(text: bytes) -> str:
+    return text.decode('utf-8')
+
+def ratio(a: int, b: int) -> int:
+    if b == 0:
+        return 0
+    return round(a/b, 2)
 
 evo.run()

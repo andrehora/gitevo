@@ -1,7 +1,5 @@
 from gitevo import GitEvo, ParsedCommit
 
-def as_str(text: bytes) -> str:
-    return text.decode('utf-8')
 
 evo = GitEvo(report_title='Java', report_name='index_java.html', 
              repo='./projects_java', extension='.java',
@@ -62,5 +60,8 @@ def int_float(commit: ParsedCommit):
 @evo.metric('Comments', aggregate='sum', categorical=True)
 def comments(commit: ParsedCommit):
     return commit.find_node_types(['block_comment', 'line_comment'])
+
+def as_str(text: bytes) -> str:
+    return text.decode('utf-8')
 
 evo.run()
