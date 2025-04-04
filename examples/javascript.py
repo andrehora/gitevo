@@ -1,13 +1,27 @@
 from gitevo import GitEvo, ParsedCommit
 
 
-evo = GitEvo(report_title='JavaScript', report_name='index_js.html', 
-             repo='./projects_javascript', extension='.js', 
-             date_unit='year', from_year=2020)
+remote = 'https://github.com/expressjs/express'
+# remote = 'https://github.com/facebook/react'
+# remote = 'https://github.com/vercel/next.js'
+# remote = 'https://github.com/sveltejs/svelte'
+# remote = 'https://github.com/nodejs/node'
 
-@evo.metric('JavaScript files', aggregate='sum')
+evo = GitEvo(repo=remote, extension='.js')
+
+@evo.metric('Lines of code (LOC)', show_version_chart=False)
+def loc(commit: ParsedCommit):
+    return commit.loc
+
+@evo.metric('JavaScript files', aggregate='sum', show_version_chart=False)
 def files(commit: ParsedCommit):
     return len(commit.parsed_files)
+
+@evo.metric('LOC / JavaScript files', show_version_chart=False)
+def loc_per_file(commit: ParsedCommit):
+    parsed_files = len(commit.parsed_files)
+    if parsed_files == 0: return 0
+    return commit.loc / parsed_files
 
 @evo.metric('Classes', aggregate='sum', categorical=True)
 def classes(commit: ParsedCommit):
@@ -17,8 +31,8 @@ def classes(commit: ParsedCommit):
 def variable_declarations(commit: ParsedCommit):
     return commit.find_node_types(['const', 'let', 'var'])
 
-@evo.metric('Functions/methods', aggregate='sum', categorical=True)
-def definitions(commit: ParsedCommit):
+@evo.metric('Functions', aggregate='sum', categorical=True)
+def functions(commit: ParsedCommit):
     method_nodes = ['function_declaration', 'method_definition', 'generator_function_declaration', 
                     'arrow_function', 'generator_function', 'function_expression']
     return commit.find_node_types(method_nodes)
@@ -31,22 +45,18 @@ def conditionals(commit: ParsedCommit):
 def loops(commit: ParsedCommit):
     return commit.find_node_types(['for_statement', 'while_statement', 'for_in_statement', 'do_statement'])
 
-@evo.metric('continue vs. break', aggregate='sum', categorical=True)
-def continue_break(commit: ParsedCommit):
-    return commit.find_node_types(['break_statement', 'continue_statement'])
-
 @evo.metric('Exception statements', aggregate='sum', categorical=True)
 def expections(commit: ParsedCommit):
     return commit.find_node_types(['try_statement', 'throw_statement'])
 
-@evo.metric('Await expression', aggregate='sum', categorical=True)
+@evo.metric('Await expression', aggregate='sum', categorical=True, show_version_chart=False)
 def await_expression(commit: ParsedCommit):
     return commit.find_node_types(['await_expression'])
 
-@evo.metric('Comments', aggregate='sum', categorical=True)
+@evo.metric('Comments', aggregate='sum', categorical=True, show_version_chart=False)
 def comments(commit: ParsedCommit):
     return commit.find_node_types(['comment'])
-
+    
 def as_str(text: bytes) -> str:
     return text.decode('utf-8')
 

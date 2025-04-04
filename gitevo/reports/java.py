@@ -18,6 +18,14 @@ def metrics(evo: GitEvo):
         parsed_files = len(commit.parsed_files)
         if parsed_files == 0: return 0
         return commit.loc / parsed_files
+    
+    @evo.metric('production file', show_version_chart=False, group='Production and test files')
+    def production_files(commit: ParsedCommit):
+        return len([file for file in commit.parsed_files if 'test' not in file.name])
+    
+    @evo.metric('test file', show_version_chart=False, group='Production and test files')
+    def test_files(commit: ParsedCommit):
+        return len([file for file in commit.parsed_files if 'test' in file.name])
 
     @evo.metric('Classes, interfaces, and records', aggregate='sum', categorical=True)
     def type_definitions(commit: ParsedCommit):
