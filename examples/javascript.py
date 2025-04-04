@@ -5,7 +5,7 @@ evo = GitEvo(report_title='JavaScript', report_name='index_js.html',
              repo='./projects_javascript', extension='.js', 
              date_unit='year', from_year=2020)
 
-@evo.metric('Analyzed JavaScript files', aggregate='sum')
+@evo.metric('JavaScript files', aggregate='sum')
 def files(commit: ParsedCommit):
     return len(commit.parsed_files)
 

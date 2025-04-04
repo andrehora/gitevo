@@ -5,7 +5,7 @@ evo = GitEvo(report_title='TypeScript', report_name='index_ts.html',
              repo='./projects_typescript', extension='.ts',
              date_unit='year', from_year=2020)
 
-@evo.metric('Analyzed TypeScript files', aggregate='sum')
+@evo.metric('TypeScript files', aggregate='sum')
 def files(commit: ParsedCommit):
     return len(commit.parsed_files)
 

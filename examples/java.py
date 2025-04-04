@@ -1,11 +1,12 @@
 from gitevo import GitEvo, ParsedCommit
 
+remote = 'https://github.com/apache/dubbo'
+# remote = 'https://github.com/google/guava'
+# remote = 'https://github.com/spring-projects/spring-boot'
 
-evo = GitEvo(report_title='Java', report_name='index_java.html', 
-             repo='./projects_java', extension='.java',
-             date_unit='year', from_year=2020)
+evo = GitEvo(repo=remote, extension='.java')
 
-@evo.metric('Analyzed Java files', aggregate='sum')
+@evo.metric('Java files', aggregate='sum')
 def files(commit: ParsedCommit):
     return len(commit.parsed_files)
 

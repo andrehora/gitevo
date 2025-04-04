@@ -3,8 +3,8 @@ from gitevo.reports.fastapi import FastAPICommit
 
 
 remote = 'https://github.com/fastapi/full-stack-fastapi-template'
-remote = 'https://github.com/fastapi/fastapi'
-remote = 'https://github.com/Netflix/dispatch'
+# remote = 'https://github.com/fastapi/fastapi'
+# remote = 'https://github.com/Netflix/dispatch'
 
 evo = GitEvo(repo=remote, extension='.py')
 
