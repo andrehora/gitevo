@@ -1,10 +1,10 @@
 import pytest
 import os
-import shutil
 
 from datetime import date
 from gitevo import GitEvo
 from gitevo.exceptions import BadGitRepo, BadDateUnit, BadYearRange
+from tests.conftest import remove_folder_if_exists
 
 testrepo = 'https://github.com/andrehora/testrepo'
 
@@ -37,6 +37,7 @@ def test_invalid_dir():
 def test_empty_dir():
 
     empty_dir = 'empty_dir'
+    remove_folder_if_exists(empty_dir)
     if not os.path.exists(empty_dir):
         os.makedirs(empty_dir)
 
@@ -44,11 +45,12 @@ def test_empty_dir():
         GitEvo(repo=empty_dir,)
     assert 'empty_dir is not a directory with git repositories' in str(e.value)
 
-    shutil.rmtree(empty_dir)
+    remove_folder_if_exists(empty_dir)
 
 def test_dir_with_empty_repo():
 
     root_dir = 'projects_dir'
+    remove_folder_if_exists(root_dir)
     project_dir = f'{root_dir}/project1'
     if not os.path.exists(project_dir):
         os.makedirs(project_dir)
@@ -57,7 +59,7 @@ def test_dir_with_empty_repo():
         GitEvo(repo=root_dir)
     assert 'project1 is not a git repository' in str(e.value)
 
-    shutil.rmtree(root_dir)
+    remove_folder_if_exists(root_dir)
 
 def test_invalid_repo_list():
 

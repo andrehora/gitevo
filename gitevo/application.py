@@ -62,11 +62,12 @@ class GitEvo:
         miner.tree_sitter_language = tree_sitter_language
         self._repo.add_miner(miner)
     
-    def run(self) -> GitEvoResult:
+    def run(self, html: bool = True) -> GitEvoResult:
         print(f'Running GitEvo...')
         result = self._compute_metrics()
-        html_path = HtmlReport(result).generate_html()
-        print(self._wrote_msg(html_path))
+        if html:
+            html_path = HtmlReport(result).generate_html()
+            print(self._wrote_msg(html_path))
         return result
     
     # metric decorator
