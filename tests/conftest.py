@@ -22,8 +22,16 @@ def clear_index():
 
 def remove_folder_if_exists(folder_name):
     if os.path.exists(folder_name):
-        shutil.rmtree(folder_name)
+        shutil.rmtree(folder_name, onerror=onerror)
 
 def remove_file_if_exists(filename):
     if os.path.exists(filename):
         os.remove(filename)
+
+def onerror(func, path, exc_info):
+    import stat
+    if not os.access(path, os.W_OK):
+        os.chmod(path, stat.S_IWUSR)
+        func(path)
+    else:
+        raise
