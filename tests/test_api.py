@@ -1,6 +1,4 @@
-import os
 import pytest
-import shutil
 
 from datetime import date
 from git import Repo
