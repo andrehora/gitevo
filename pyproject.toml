@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
 [project]
@@ -10,8 +10,25 @@ authors = [
 ]
 license = "MIT"
 readme = "README.md"
-version = "0.1"
+requires-python = ">=3.9"
+dynamic = ["version"]
+dependencies = [
+    "gitpython==3.1.44",
+    "treeminer==0.1",
+    "tree-sitter",
+    "tree-sitter-python",
+    "tree-sitter-javascript",
+    "tree-sitter-typescript",
+    "tree-sitter-java"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Quality Assurance"
+]
 
 [project.urls]
-"Homepage" = "https://github.com/andrehora/gitevo"
-"Bug Tracker" = "https://github.com/andrehora/gitevo/issues"
+Homepage = "https://github.com/andrehora/gitevo"
+Issues = "https://github.com/andrehora/gitevo/issues"

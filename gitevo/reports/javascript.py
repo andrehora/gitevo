@@ -9,7 +9,7 @@ def metrics(evo: GitEvo):
     def loc(commit: ParsedCommit):
         return commit.loc
 
-    @evo.metric('JavaScript files', aggregate='sum', show_version_chart=False))
+    @evo.metric('JavaScript files', aggregate='sum', show_version_chart=False)
     def files(commit: ParsedCommit):
         return len(commit.parsed_files)
     
@@ -45,10 +45,10 @@ def metrics(evo: GitEvo):
     def expections(commit: ParsedCommit):
         return commit.find_node_types(['try_statement', 'throw_statement'])
 
-    @evo.metric('Await expression', aggregate='sum', categorical=True, show_version_chart=False))
+    @evo.metric('Await expression', aggregate='sum', categorical=True, show_version_chart=False)
     def await_expression(commit: ParsedCommit):
         return commit.find_node_types(['await_expression'])
 
-    @evo.metric('Comments', aggregate='sum', categorical=True, show_version_chart=False))
+    @evo.metric('Comments', aggregate='sum', categorical=True, show_version_chart=False)
     def comments(commit: ParsedCommit):
         return commit.find_node_types(['comment'])

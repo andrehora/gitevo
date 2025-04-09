@@ -1,3 +1,9 @@
-treeminer
+gitpython==3.1.44
+treeminer==0.1
+tree-sitter
+tree-sitter-python
+tree-sitter-javascript
+tree-sitter-typescript
+tree-sitter-java
 pytest
 pytest-cov
