@@ -4,6 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "gitevo"
+version = "0.1.0"
 description = "Code evolution analysis for Git repositories"
 authors = [
   { name="Andre Hora", email="andrehoraa@gmail.com" },
@@ -11,7 +12,6 @@ authors = [
 license = "MIT"
 readme = "README.md"
 requires-python = ">=3.9"
-dynamic = ["version"]
 dependencies = [
     "gitpython==3.1.44",
     "treeminer==0.1",
