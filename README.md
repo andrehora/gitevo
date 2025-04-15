@@ -11,7 +11,7 @@ It currently supports Python, JavaScript, TypeScript, and Java.
 pip install gitevo
 ```
 
-## Quick examples
+## Usage
 
 Analyzing the evolution of a Git repository:
 
