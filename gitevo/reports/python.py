@@ -22,11 +22,11 @@ def metrics(evo: GitEvo):
     
     @evo.metric('production file', show_version_chart=False, group='Production and test files')
     def production_files(commit: ParsedCommit):
-        return len([file for file in commit.parsed_files if 'test' not in file.name])
+        return len([file for file in commit.parsed_files if 'test' not in file.name.lower()])
     
     @evo.metric('test file', show_version_chart=False, group='Production and test files')
     def test_files(commit: ParsedCommit):
-        return len([file for file in commit.parsed_files if 'test' in file.name])
+        return len([file for file in commit.parsed_files if 'test' in file.name.lower()])
     
     @evo.metric('Data structures', categorical=True)
     def data_structures(commit: ParsedCommit):
