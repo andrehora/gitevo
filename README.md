@@ -16,7 +16,7 @@ pip install gitevo
 Analyzing the evolution of a Git repository:
 
 ```
-$ gitevo <git_url|git_dir> -r <python|js|ts|fastapi>
+$ gitevo <git_url> -r <python|js|ts|fastapi>
 ```
 
 For example:
