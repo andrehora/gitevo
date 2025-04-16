@@ -23,4 +23,4 @@ jobs:
       - name: Install GitEvo
         run: pip install -e .
       - name: Run GitEvo
-        run: gitevo
+        run: gitevo .
