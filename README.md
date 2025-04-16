@@ -16,23 +16,24 @@ pip install gitevo
 Analyzing the evolution of a Git repository:
 
 ```
-$ python -m gitevo <repo_url> -r <python|js|ts|fastapi>
+$ gitevo <git_url|git_dir> -r <python|js|ts|fastapi>
 ```
 
 For example:
 
 ```
-$ python -m gitevo https://github.com/pallets/flask -r python
-$ python -m gitevo https://github.com/expressjs/express -r js
-$ python -m gitevo https://github.com/vuejs/core -r ts
-$ python -m gitevo https://github.com/mockito/mockito -r java
-$ python -m gitevo https://github.com/fastapi/fastapi -r fastapi
+$ gitevo https://github.com/pallets/flask -r python
+$ gitevo https://github.com/expressjs/express -r js
+$ gitevo https://github.com/vuejs/core -r ts
+$ gitevo https://github.com/mockito/mockito -r java
+$ gitevo https://github.com/fastapi/fastapi -r fastapi
 ```
 
 ## Command line arguments
 
 ```
-usage: python -m gitevo [-h] [-r {python,js,ts,java,fastapi}] [-f FROM_YEAR] [-t TO_YEAR] [-m] [-l] repo
+$ gitevo --help
+usage: gitevo [-h] [-r {python,js,ts,java,fastapi}] [-f FROM_YEAR] [-t TO_YEAR] [-m] [-l] repo
 
 Command line for GitEvo
 
