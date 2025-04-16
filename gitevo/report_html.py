@@ -7,7 +7,7 @@ from gitevo.model import GitEvoResult, MetricEvolution
 
 class HtmlReport:
 
-    TEMPLATE_HTML_FILENAME = './gitevo/template.html'
+    TEMPLATE_HTML_FILENAME = 'template.html'
     JSON_DATA_PLACEHOLDER = '{{JSON_DATA}}'
     TITLE_PLACEHOLDER = '{{TITLE}}'
     CREATED_DATE_PLACEHOLDER = '{{CREATED_DATE}}'
@@ -89,7 +89,8 @@ class HtmlReport:
         return [evolution for evolution in self.metric_evolutions if evolution.name in metric_names]
     
     def _read_template(self):
-        with open(self.TEMPLATE_HTML_FILENAME, 'r') as template_file:
+        absolute_template_filename = self._absolute_filename(self.TEMPLATE_HTML_FILENAME)
+        with open(absolute_template_filename, 'r') as template_file:
             template = template_file.read()
         return template
 
@@ -106,6 +107,10 @@ class HtmlReport:
     def _replace_created_date(self, source):
         now = datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %z")
         return source.replace(self.CREATED_DATE_PLACEHOLDER, now)
+    
+    def _absolute_filename(self, filename: str):
+        dir_path = os.path.dirname(__file__)
+        return os.path.join(dir_path, filename)
 
 
 class Chart:

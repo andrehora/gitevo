@@ -29,6 +29,9 @@ classifiers = [
     "Topic :: Software Development :: Quality Assurance"
 ]
 
+[project.scripts]
+gitevo = "gitevo.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/andrehora/gitevo"
 Issues = "https://github.com/andrehora/gitevo/issues"
