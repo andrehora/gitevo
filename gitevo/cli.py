@@ -15,7 +15,7 @@ def parse_args(args=None):
     parser.add_argument(
         'repo',
         type=str,
-        help='Git repository to be analyzed. It can be a remote Git repository or a path a local Git repository.'
+        help='Git repository to be analyzed. It can be a remote Git repository or a path to a local Git repository.'
     )
 
     parser.add_argument(
