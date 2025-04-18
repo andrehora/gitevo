@@ -110,11 +110,8 @@ def test_invalid_repo():
     assert result == 1
     assert not index_exists()
 
-# def test_version():
-#     msg = gitevo_version()
-#     assert 'GitEvo ' in msg
-#     assert '.' in msg
-#     assert any(char.isdigit() for char in msg)
+def test_version():
+    assert 'GitEvo ' in gitevo_version()
 
 def index_exists():
     return os.path.exists('index.html')

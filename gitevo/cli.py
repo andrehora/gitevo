@@ -1,5 +1,7 @@
 import argparse
 
+from importlib.metadata import version
+
 from gitevo import GitEvo
 from gitevo.cli_reports import report_mappings
 
@@ -64,9 +66,11 @@ def parse_args(args=None):
     return parser.parse_args(args)
 
 def gitevo_version():
-    from importlib.metadata import version
-    return f'GitEvo {version("gitevo")}'
-
+    try:
+        v = version("gitevo")
+        return f'GitEvo {v}'
+    except Exception:
+        return 'GitEvo dev'
 
 class GitEvoCLI:
 
