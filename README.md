@@ -28,8 +28,10 @@ pip install gitevo
 Analyzing the evolution of a Git repository:
 
 ```
-$ gitevo <git_url|git_path> -r <python|js|ts|fastapi>
+$ gitevo <git_repo> -r <python|js|ts|fastapi>
 ```
+
+`git_repo` can be a Git remote repositority or a path to a local Git repository.
 
 For example:
 
@@ -50,7 +52,7 @@ usage: gitevo [-h] [-r {python,js,ts,java,fastapi}] [-f FROM_YEAR] [-t TO_YEAR] 
 Command line for GitEvo
 
 positional arguments:
-  repo                  Git repository to be analyzed. It can be a remote Git repository or a path a local Git repository.
+  repo                  Git repository to be analyzed. It can be a remote Git repository or a path to a local Git repository.
 
 options:
   -h, --help            show this help message and exit
