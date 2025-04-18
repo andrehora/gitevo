@@ -31,7 +31,7 @@ Analyzing the evolution of a Git repository:
 $ gitevo <git_repo> -r <python|js|ts|fastapi>
 ```
 
-`git_repo` can be a Git remote repositority or a path to a local Git repository.
+`git_repo` can be a url or path to a Git repositority.
 
 For example:
 
