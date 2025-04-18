@@ -1,5 +1,5 @@
 import os
-from gitevo.cli import GitEvoCLI, main
+from gitevo.cli import GitEvoCLI, main, gitevo_version
 
 def test_repo(local_repo, clear_index):
     args = f'{local_repo}'.split()
@@ -109,6 +109,12 @@ def test_invalid_repo():
     result = main(args)
     assert result == 1
     assert not index_exists()
+
+def test_version():
+    msg = gitevo_version()
+    assert 'GitEvo ' in msg
+    assert '.' in msg
+    assert any(char.isdigit() for char in msg)
 
 def index_exists():
     return os.path.exists('index.html')

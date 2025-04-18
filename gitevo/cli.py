@@ -1,4 +1,5 @@
 import argparse
+
 from gitevo import GitEvo
 from gitevo.cli_reports import report_mappings
 
@@ -28,7 +29,7 @@ def parse_args(args=None):
         '-f',
         '--from-year',
         type=int,
-        help='Filter commits to be analyzed (from year).'
+        help='Filter commits to be analyzed (from year). Default is today - 5 years.'
     )
 
     parser.add_argument(
@@ -52,7 +53,19 @@ def parse_args(args=None):
         help='Set to analyze the last version only.'
     )
 
+    parser.add_argument(
+        '-v',
+        '--version',
+        action='version',
+        version=gitevo_version(),
+        help='Show the GitEvo version.'
+    )
+
     return parser.parse_args(args)
+
+def gitevo_version():
+    from importlib.metadata import version
+    return f'GitEvo {version("gitevo")}'
 
 
 class GitEvoCLI:
@@ -70,16 +83,17 @@ class GitEvoCLI:
         if parsed_args.month:
             self.date_unit = 'month'
 
-        self.last_version_only = False
-        if parsed_args.last_version_only:
-            self.last_version_only = True
-        
+        self.last_version_only = parsed_args.last_version_only
 
     def run(self):
 
         report = report_mappings.get(self.report_type)
-        evo = GitEvo(repo=self.repo, extension=report.extension, from_year=self.from_year, 
-                     to_year=self.to_year, date_unit=self.date_unit, last_version_only=self.last_version_only)
+        evo = GitEvo(repo=self.repo, 
+                     extension=report.extension, 
+                     from_year=self.from_year, 
+                     to_year=self.to_year, 
+                     date_unit=self.date_unit, 
+                     last_version_only=self.last_version_only)
         report.metrics(evo)
         evo.run()
         return OK
