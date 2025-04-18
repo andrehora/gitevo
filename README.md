@@ -12,9 +12,8 @@ Examples of reports:
 [TypeScript](https://andrehora.github.io/gitevo-examples/typescript/typescript.html),
 [Vue-core](https://andrehora.github.io/gitevo-examples/typescript/vuejs-core.html),
 [Spring Boot](https://andrehora.github.io/gitevo-examples/java/spring-boot.html),
-[Mockito](https://andrehora.github.io/gitevo-examples/java/mockito.html),
-[FastAPI](https://andrehora.github.io/gitevo-examples/fastapi/fastapi.html), and
-[Dispatch](https://andrehora.github.io/gitevo-examples/fastapi/dispatch.html).
+[Mockito](https://andrehora.github.io/gitevo-examples/java/mockito.html), and
+[FastAPI](https://andrehora.github.io/gitevo-examples/fastapi/fastapi.html).
 
 More examples: [gitevo-examples](https://github.com/andrehora/gitevo-examples).
 
