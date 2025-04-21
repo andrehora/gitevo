@@ -43,7 +43,7 @@ $ gitevo https://github.com/mockito/mockito -r java
 $ gitevo https://github.com/fastapi/fastapi -r fastapi
 ```
 
-Other options:
+More examples:
 
 ```
 # 1. Git URL
