@@ -31,7 +31,7 @@ Analyzing the evolution of a Git repository:
 $ gitevo <git_repo> -r <python|js|ts|fastapi>
 ```
 
-`git_repo` a Git url, a local Git repository, or folder with multiple Git repositories.
+`git_repo` can be a Git url, a local Git repository, or folder with multiple Git repositories.
 
 For example, passing Git urls:
 
