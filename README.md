@@ -56,9 +56,9 @@ gitevo flask -r python
 # 3. Directory containing multiple Git repositories
 mkdir projects
 cd projects
-git clone https://github.com/pallets/flask -r python
-git clone https://github.com/pallets/click -r python
-gitevo .
+git clone https://github.com/pallets/flask
+git clone https://github.com/pallets/click
+gitevo . -r python
 ```
 
 ## Command line arguments
