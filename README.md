@@ -43,7 +43,7 @@ $ gitevo -r fastapi https://github.com/fastapi/fastapi
 
 `git_repo` accepts (1) a Git URL, (2) a path to a local repository, or (3) a directory containing multiple Git repositories:
 
-```
+```shell
 # 1. Git URL
 gitevo -r python https://github.com/pallets/flask
 
