@@ -45,18 +45,18 @@ $ gitevo -r fastapi https://github.com/fastapi/fastapi
 
 ```shell
 # 1. Git URL
-gitevo -r python https://github.com/pallets/flask
+$ gitevo -r python https://github.com/pallets/flask
 
 # 2. Path to a local repository
-git clone https://github.com/pallets/flask
-gitevo -r python flask
+$ git clone https://github.com/pallets/flask
+$ gitevo -r python flask
 
 # 3. Directory containing multiple Git repositories
-mkdir projects
-cd projects
-git clone https://github.com/pallets/flask
-git clone https://github.com/pallets/click
-gitevo -r python .
+$ mkdir projects
+$ cd projects
+$ git clone https://github.com/pallets/flask
+$ git clone https://github.com/pallets/click
+$ gitevo -r python .
 ```
 
 ## Command line arguments
