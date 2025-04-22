@@ -47,20 +47,6 @@ def test_empty_dir():
 
     remove_folder_if_exists(empty_dir)
 
-def test_dir_with_empty_repo():
-
-    root_dir = 'projects_dir'
-    remove_folder_if_exists(root_dir)
-    project_dir = f'{root_dir}/project1'
-    if not os.path.exists(project_dir):
-        os.makedirs(project_dir)
-
-    with pytest.raises(BadGitRepo) as e:
-        GitEvo(repo=root_dir)
-    assert 'project1 is not a git repository' in str(e.value)
-
-    remove_folder_if_exists(root_dir)
-
 def test_invalid_repo_list():
 
     with pytest.raises(BadGitRepo) as e:

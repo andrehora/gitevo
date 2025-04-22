@@ -235,10 +235,15 @@ class GitEvo:
                 paths = self._projects_dir(repo)
                 if not paths:
                     raise BadGitRepo(f'{repo} is not a directory with git repositories')
+                git_paths = []
+                print('Directory containing multiple Git repositories')
                 for path in paths:
-                    if not self._is_git_dir(path):
-                        raise BadGitRepo(f'{path} is not a git repository')
-                return paths
+                    if self._is_git_dir(path):
+                        print('- Found Git repo:', path)
+                        git_paths.append(path)
+                    else:
+                        print('- Not a Git repo:', path)
+                return git_paths
         
         # project_path is list
         if isinstance(repo, list):
