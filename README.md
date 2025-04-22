@@ -31,9 +31,7 @@ Analyzing the evolution of a Git repository:
 $ gitevo <git_repo> -r <python|js|ts|fastapi>
 ```
 
-`git_repo` can be a Git url, a local Git repository, or folder with multiple Git repositories.
-
-For example, passing Git urls:
+For example:
 
 ```
 $ gitevo https://github.com/pallets/flask -r python
@@ -43,21 +41,23 @@ $ gitevo https://github.com/mockito/mockito -r java
 $ gitevo https://github.com/fastapi/fastapi -r fastapi
 ```
 
-More examples:
+`git_repo` is the Git repository to analyze.
+It accepts a Git URL, a path to a local repository, or a directory containing multiple Git repositories.
+For example:
 
 ```
 # 1. Git URL
-gitevo https://github.com/pallets/flask
+gitevo https://github.com/pallets/flask -r python
 
-# 2. Local Git repository
+# 2. Path to a local repository
 git clone https://github.com/pallets/flask
-gitevo flask
+gitevo flask -r python
 
-# 3. Folder with multiple Git repositories
+# 3. Directory containing multiple Git repositories
 mkdir projects
 cd projects
-git clone https://github.com/pallets/flask
-git clone https://github.com/pallets/click
+git clone https://github.com/pallets/flask -r python
+git clone https://github.com/pallets/click -r python
 gitevo .
 ```
 
@@ -70,7 +70,7 @@ usage: gitevo [-h] [-r {python,js,ts,java,fastapi}] [-f FROM_YEAR] [-t TO_YEAR] 
 Command line for GitEvo
 
 positional arguments:
-  repo                  Git repository to be analyzed. It can be a Git url, a local Git repository, or folder with multiple Git repositories.
+  repo                  Git repository to analyze. Accepts a Git URL, a path to a local repository, or a directory containing multiple Git repositories.
 
 options:
   -h, --help            show this help message and exit
