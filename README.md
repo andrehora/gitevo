@@ -41,9 +41,7 @@ $ gitevo https://github.com/mockito/mockito -r java
 $ gitevo https://github.com/fastapi/fastapi -r fastapi
 ```
 
-`git_repo` is the Git repository to analyze.
-It accepts a Git URL, a path to a local repository, or a directory containing multiple Git repositories.
-For example:
+`git_repo` accepts (1) a Git URL, (2) a path to a local repository, or (3) a directory containing multiple Git repositories:
 
 ```
 # 1. Git URL
