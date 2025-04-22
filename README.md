@@ -31,9 +31,6 @@ Analyzing the evolution of a Git repository:
 $ gitevo <git_repo> -r <python|js|ts|fastapi>
 ```
 
-`git_repo` is the Git repository to analyze.
-Accepts a Git URL, a path to a local repository, or a directory containing multiple Git repositories
-
 For example:
 
 ```
@@ -44,21 +41,23 @@ $ gitevo https://github.com/mockito/mockito -r java
 $ gitevo https://github.com/fastapi/fastapi -r fastapi
 ```
 
-More examples:
+`git_repo` is the Git repository to analyze.
+It accepts a Git URL, a path to a local repository, or a directory containing multiple Git repositories.
+For example:
 
 ```
 # 1. Git URL
-gitevo https://github.com/pallets/flask
+gitevo https://github.com/pallets/flask -r python
 
 # 2. Path to a local repository
 git clone https://github.com/pallets/flask
-gitevo flask
+gitevo flask -r python
 
 # 3. Directory containing multiple Git repositories
 mkdir projects
 cd projects
-git clone https://github.com/pallets/flask
-git clone https://github.com/pallets/click
+git clone https://github.com/pallets/flask -r python
+git clone https://github.com/pallets/click -r python
 gitevo .
 ```
 
