@@ -20,9 +20,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-      - name: Install
+      - name: GitEvo Install
         run: pip install -e .
-      - name: Version
+      - name: GitEvo Version
         run: gitevo -v
-      - name: Run
+      - name: GitEvo Run
         run: gitevo .
