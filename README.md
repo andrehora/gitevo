@@ -4,6 +4,7 @@
 
 Code evolution analysis for Git repositories.
 It currently supports Python, JavaScript, TypeScript, and Java.
+
 Examples of reports: 
 [Flask](https://andrehora.github.io/gitevo-examples/python/flask.html),
 [Pandas](https://andrehora.github.io/gitevo-examples/python/pandas.html),
@@ -15,7 +16,7 @@ Examples of reports:
 [Mockito](https://andrehora.github.io/gitevo-examples/java/mockito.html), and
 [FastAPI](https://andrehora.github.io/gitevo-examples/fastapi/fastapi.html).
 
-More examples: [gitevo-examples](https://github.com/andrehora/gitevo-examples).
+See more examples: [gitevo-examples](https://github.com/andrehora/gitevo-examples).
 
 ## Install
 
