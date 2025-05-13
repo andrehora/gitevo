@@ -27,7 +27,6 @@ class GitEvo:
                 report_title: str | None = None,
                 report_filename: str = 'index.html'):
                 
-                        
         self.project_repos = self._check_git_projects(repo)
         
         if date_unit not in ['year', 'month']:
@@ -175,8 +174,12 @@ class GitEvo:
             commit_result = CommitResult(commit.hash, commit.committer_date.date())
             for metric_info in self.registered_metrics:
                 
-                # Get parsed_commit and run the metric callback
+                # Get parsed_commit and check if it has files
                 parsed_commit = parsed_commits.get_parsed_commit_for(metric_info.file_extension)
+                if len(parsed_commit.parsed_files) == 0:
+                    continue
+
+                # Run the metric callback
                 metric_value = metric_info.callback(parsed_commit)
 
                 # Process categorical metrics
