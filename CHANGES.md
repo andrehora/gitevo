@@ -1,6 +1,5 @@
 ## Version 0.1.3
 Unreleased
-- Skip parsed commits with no source file. This avoids exceptions when computing the metrics.
 
 ## Version 0.1.2
 Released 2025-04-22
