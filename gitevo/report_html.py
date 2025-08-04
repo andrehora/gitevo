@@ -12,10 +12,10 @@ class HtmlReport:
     TITLE_PLACEHOLDER = '{{TITLE}}'
     CREATED_DATE_PLACEHOLDER = '{{CREATED_DATE}}'
 
-    def __init__(self, result: GitEvoResult):
+    def __init__(self, result: GitEvoResult, verbose: bool = False):
 
         self.report_title = self._ensure_title(result)
-        self.report_filename = result.report_filename
+        self.report_filename = f'{result.report_filename}.html'
         self.metric_dates = result.metric_dates
         self.metric_groups = result.metric_groups
         self.metric_version_chart_types = result.metric_version_chart_types
@@ -23,6 +23,7 @@ class HtmlReport:
         self.metric_tops_n = result.metric_tops_n
         self.metric_evolutions = result.metric_evolutions()
         self.last_version_only = result.last_version_only
+        self._verbose = verbose
 
     def generate_html(self) -> str:
         json_data = self._json_data()
@@ -35,9 +36,9 @@ class HtmlReport:
     
     def _ensure_title(self, result: GitEvoResult) -> str:
         if result.report_title is None:
-            if len(result.project_results) == 1:
-                return result.project_results[0].name
-            return 'Multiple projects...'
+            if result.is_multi_projects():
+                return 'All projects'
+            return result.project_results[0].name
         return result.report_title
 
     def _json_data(self):
@@ -45,7 +46,8 @@ class HtmlReport:
 
     def _build_charts(self) -> list[dict]:
         charts = []
-        print('Exported metrics:')
+        if self._verbose:
+            print('Exported metrics:')
         cont = 0
         for group_name, metric_names in self.metric_groups.items():
             assert group_name in self.metric_tops_n
@@ -53,7 +55,8 @@ class HtmlReport:
             
             group_evolution = self._find_metric_evolutions(metric_names)
             if not group_evolution:
-                print(f'{cont} - {group_name} -> no data')
+                if self._verbose:
+                    print(f'{cont} - {group_name} -> no data')
                 continue
 
             top_n = self.metric_tops_n[group_name]
@@ -81,7 +84,8 @@ class HtmlReport:
             elif version_msg: msg = version_msg
             elif evo_msg: msg = evo_msg
             else: msg = 'no data'
-            print(f'{cont} - {group_name} -> {msg}')
+            if self._verbose:
+                print(f'{cont} - {group_name} -> {msg}')
 
         return charts
             

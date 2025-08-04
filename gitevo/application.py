@@ -11,6 +11,7 @@ from treeminer.miners import BaseMiner
 from gitevo.model import GitEvoResult, ProjectResult, CommitResult, MetricResult
 from gitevo.info import MetricInfo, BeforeCommitInfo
 from gitevo.report_html import HtmlReport
+from gitevo.report_csv import TableReport
 from gitevo.utils import is_git_dir, stdout_msg, stdout_link, as_str, aggregate_stat, ensure_file_extension
 from gitevo.exceptions import *
           
@@ -25,7 +26,9 @@ class GitEvo:
                 date_unit: str = 'year', 
                 last_version_only: bool = False,
                 report_title: str | None = None,
-                report_filename: str = 'index.html'):
+                report_filename: str = 'index',
+                export_html: bool = True,
+                export_csv: bool = True):
                 
         self.project_repos = self._check_git_projects(repo)
         
@@ -48,6 +51,8 @@ class GitEvo:
         self.last_version_only = last_version_only
         self.report_title = report_title
         self.report_filename = report_filename.strip()
+        self.export_html = export_html
+        self.export_csv = export_csv
 
         self.registered_metrics: list[MetricInfo] = []
         self.registered_before_commits: list[BeforeCommitInfo] = []
@@ -61,14 +66,37 @@ class GitEvo:
         miner.tree_sitter_language = tree_sitter_language
         self._repo.add_miner(miner)
     
-    def run(self, html: bool = True) -> GitEvoResult:
+    def run(self) -> GitEvoResult:
         print(f'Running GitEvo...')
         result = self._compute_metrics()
-        if html:
-            html_path = HtmlReport(result).generate_html()
-            print(self._wrote_msg(html_path))
+        self._export_html(result, self.export_html)
+        self._export_csv(result, self.export_csv)
         return result
     
+    def _export_csv(self, result: GitEvoResult, export_csv: bool):
+        if not export_csv:
+            return
+        TableReport(result).export_csv()
+        if result.is_multi_projects():
+            for project_result in result.results_per_project(72):
+                TableReport(project_result).export_csv()
+                
+    def _export_html(self, result: GitEvoResult, export_html: bool):
+        if not export_html:
+            return
+        
+        html_paths = []
+        html_path = HtmlReport(result).generate_html()
+        html_paths.append(html_path)
+
+        if result.is_multi_projects():
+            for project_result in result.results_per_project(72):
+                html_path = HtmlReport(project_result, verbose=False).generate_html()
+                html_paths.append(html_path)
+        
+        for html_path in html_paths:
+            print(self._wrote_msg(html_path))
+
     # metric decorator
     def metric(self, name: str = None,
                *,
@@ -276,7 +304,7 @@ class GitEvo:
     
     def _wrote_msg(self, html_path: str) -> str:
         html_link = stdout_link(html_path, f'file://{html_path}')
-        msg =  f'HTML report written to {html_link}'
+        msg =  f'HTML report: {html_link}'
         return stdout_msg(msg)
             
     def _all_file_extensions(self) -> set[str]:

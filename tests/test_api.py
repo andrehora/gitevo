@@ -1,7 +1,6 @@
 import pytest
 
 from datetime import date
-from git import Repo
 from gitevo import GitEvo, ParsedCommit
 from gitevo.exceptions import BadReturnType, BadAggregate, BadLOCAggregate, FileExtensionNotFound
 
@@ -14,7 +13,7 @@ def test_register_single_metric(local_repo):
     def single_metric(commit: ParsedCommit):
         return 1
     
-    result = evo.run(html=False)
+    result = evo.run()
     assert result.registered_metrics[0].name == 'Single metric'
 
     assert len(result.registered_metrics) == 1
@@ -35,7 +34,7 @@ def test_register_multiple_metrics(local_repo):
     def m2(commit: ParsedCommit):
         return 2
 
-    result = evo.run(html=False)
+    result = evo.run()
 
     assert len(result.registered_metrics) == 2
 
@@ -52,7 +51,7 @@ def test_register_multiple_metrics(local_repo):
 def test_register_no_metric(local_repo):
 
     evo = GitEvo(repo=local_repo, extension='.py')
-    result = evo.run(html=False)
+    result = evo.run()
     assert len(result.registered_metrics) == 0
 
 def test_register_unamed_metric(local_repo):
@@ -63,7 +62,7 @@ def test_register_unamed_metric(local_repo):
     def my_metric_name(commit: ParsedCommit):
         return 1
     
-    result = evo.run(html=False)
+    result = evo.run()
     assert result.registered_metrics[0].name == 'my_metric_name'
     assert result.registered_metrics[0].group == 'my_metric_name'
 
@@ -84,7 +83,7 @@ def test_register_before(local_repo):
     def m1(my_data: MyData):
         return my_data.value
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert evolutions[0].values == [100, 100, 100, 100, 100, 100]
@@ -97,7 +96,7 @@ def test_commit_metadata_by_year(local_repo):
     def m1(commit: ParsedCommit):
         return 1
     
-    result = evo.run(html=False)
+    result = evo.run()
 
     assert len(result.project_results) == 1
 
@@ -121,7 +120,7 @@ def test_commit_metadata_by_month(local_repo):
     def m1(commit: ParsedCommit):
         return 1
     
-    result = evo.run(html=False)
+    result = evo.run()
 
     assert len(result.project_results) == 1
 
@@ -153,7 +152,7 @@ def test_metric_names(local_repo):
     def m3(commit: ParsedCommit):
         return 1
     
-    result = evo.run(html=False)
+    result = evo.run()
 
     assert result.metric_names == ['m1', 'm2', 'm3']
 
@@ -165,7 +164,7 @@ def test_dates_by_year(local_repo):
     def m1(commit: ParsedCommit):
         return 1
     
-    result = evo.run(html=False)
+    result = evo.run()
 
     assert result.metric_dates == ['2020', '2021', '2022', '2023', '2024', '2025']
 
@@ -177,7 +176,7 @@ def test_dates_filter(local_repo):
     def m1(commit: ParsedCommit):
         return 1
     
-    result = evo.run(html=False)
+    result = evo.run()
 
     assert result.metric_dates == ['2021', '2022']
 
@@ -189,7 +188,7 @@ def test_dates_last_version(local_repo):
     def m1(commit: ParsedCommit):
         return 1
     
-    result = evo.run(html=False)
+    result = evo.run()
 
     assert result.metric_dates == ['2025']
 
@@ -201,7 +200,7 @@ def test_dates_by_month(local_repo):
     def m1(commit: ParsedCommit):
         return 1
     
-    result = evo.run(html=False)
+    result = evo.run()
 
     assert len(result.metric_dates) > 50
     assert result.metric_dates[0] == '01/2020'
@@ -219,7 +218,7 @@ def test_numerical_metric(local_repo):
     def m2(commit: ParsedCommit):
         return 1.1
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert len(evolutions) == 2
@@ -238,7 +237,7 @@ def test_invalid_numerical_metric(local_repo):
         return 'foo'
     
     with pytest.raises(BadReturnType):
-        evo.run(html=False)
+        evo.run()
 
 def test_numerical_metric_list_aggregate(local_repo):
 
@@ -252,7 +251,7 @@ def test_numerical_metric_list_aggregate(local_repo):
     def m2(commit: ParsedCommit):
         return [1,1,1]
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert len(evolutions) == 2
@@ -268,7 +267,7 @@ def test_numerical_metric_invalid_list_aggregate(local_repo):
         return [1,1,1]
     
     with pytest.raises(BadAggregate):
-        evo.run(html=False)
+        evo.run()
 
 def test_categorical_metric(local_repo):
 
@@ -278,7 +277,7 @@ def test_categorical_metric(local_repo):
     def m1(commit: ParsedCommit):
         return ['a', 'a', 'a', 'b', 'b', 'c']
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert len(evolutions) == 3
@@ -294,7 +293,7 @@ def test_empty_categorical_metric(local_repo):
     def m1(commit: ParsedCommit):
         return []
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
     
     assert len(evolutions) == 0
@@ -308,7 +307,7 @@ def test_invalid_categorical_metric(local_repo):
         return 100
     
     with pytest.raises(BadReturnType):
-        evo.run(html=False)
+        evo.run()
 
 def test_ungrouped_metrics(local_repo):
     
@@ -322,7 +321,7 @@ def test_ungrouped_metrics(local_repo):
     def m2(commit: ParsedCommit):
         return 2
     
-    result = evo.run(html=False)
+    result = evo.run()
     assert len(result.metric_groups) == 2
 
 def test_grouped_metrics(local_repo):
@@ -337,7 +336,7 @@ def test_grouped_metrics(local_repo):
     def m2(commit: ParsedCommit):
         return 2
     
-    result = evo.run(html=False)
+    result = evo.run()
     assert len(result.metric_groups) == 1
 
 def test_parsed_files_single_extension(local_repo):
@@ -348,7 +347,7 @@ def test_parsed_files_single_extension(local_repo):
     def m1(commit: ParsedCommit):
         return len(commit.parsed_files)
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert evolutions[0].values == [0, 1, 1, 1, 1, 1]
@@ -369,7 +368,7 @@ def test_parsed_files_multiple_extension(local_repo):
     def files3(commit: ParsedCommit):
         return len(commit.parsed_files)
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert evolutions[0].values == [0, 1, 1, 1, 1, 1]
@@ -384,7 +383,7 @@ def test_no_parsed_files(local_repo):
     def m1(commit: ParsedCommit):
         return len(commit.parsed_files)
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert evolutions[0].values == [0, 0, 0, 0, 0, 0]
@@ -398,7 +397,7 @@ def test_missing_extension(local_repo):
         return len(commit.parsed_files)
     
     with pytest.raises(FileExtensionNotFound):
-        evo.run(html=False)
+        evo.run()
 
 def test_loc(local_repo):
 
@@ -410,7 +409,7 @@ def test_loc(local_repo):
     def m1(commit: ParsedCommit):
         return commit.loc
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert evolutions[0].values[0:7] == [0, 2, 5, 8, 13, 15, 15]
@@ -423,7 +422,7 @@ def test_zero_loc(local_repo):
     def m1(commit: ParsedCommit):
         return commit.loc
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert evolutions[0].values == [0, 0, 0, 0, 0, 0]
@@ -444,7 +443,7 @@ def test_loc_by_type(local_repo):
     def m3(commit: ParsedCommit):
         return commit.loc_by_type('function_definition')
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert evolutions[0].values[0:6] == [0, 2, 2, 2, 2.5, 2.5]
@@ -460,7 +459,7 @@ def test_invalid_loc_by_type(local_repo):
         return commit.loc_by_type('function_definition', 'invalid')
     
     with pytest.raises(BadLOCAggregate):
-        evo.run(html=False)
+        evo.run()
 
 def test_count_nodes_all(local_repo):
 
@@ -470,7 +469,7 @@ def test_count_nodes_all(local_repo):
     def all_nodes(commit: ParsedCommit):
         return commit.count_nodes()
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
     assert evolutions[0].values[0:6] == [0, 18, 35, 52, 84, 97]
     
@@ -490,7 +489,7 @@ def test_count_nodes_multiple(local_repo):
     def functions_and_classes(commit: ParsedCommit):
         return commit.count_nodes(['function_definition', 'class_definition'])
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert evolutions[0].values[0:6] == [0, 1, 2, 3, 4, 4]
@@ -505,7 +504,7 @@ def test_find_node_types_multiple(local_repo):
     def functions_and_classes(commit: ParsedCommit):
         return commit.find_node_types(['function_definition', 'class_definition'])
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert len(evolutions) == 2
@@ -518,7 +517,7 @@ def test_find_node_types_all(local_repo):
     def all_types(commit: ParsedCommit):
         return commit.find_node_types()
     
-    result = evo.run(html=False)
+    result = evo.run()
     evolutions = result.metric_evolutions()
 
     assert len(evolutions) > 20

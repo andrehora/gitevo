@@ -94,6 +94,24 @@ class GitEvoResult:
         self.project_results: list[ProjectResult] = []
         self._metrics_data = MetricData()
 
+    def is_multi_projects(self) -> bool:
+        return len(self.project_results) > 1
+    
+    def results_per_project(self, filter_by_number_of_months: int) -> list['GitEvoResult']:
+        results = []
+        for project_result in self.project_results:
+            if len(project_result.commit_results) != filter_by_number_of_months:
+                print(f'Skipping project {project_result.name} with {len(project_result.commit_results)} commits')
+                continue
+            report_title = project_result.name
+            report_filename = project_result.name
+            result = GitEvoResult(report_title, report_filename, DateUtils.date_unit, 
+                                          self.registered_metrics, self.last_version_only)
+            result._metrics_data = self._metrics_data
+            result.add_project_result(project_result)
+            results.append(result)
+        return results
+
     @property
     def metric_names(self) -> list[str]:
         return self._metrics_data.names
@@ -128,6 +146,13 @@ class GitEvoResult:
         self.project_results.append(project_result)
     
     def metric_evolutions(self) -> list[MetricEvolution]:
+        metric_evolutions = []
+        for metric_name, metric_agg in self._metrics_data.names_and_aggregates:
+            metric_evo = self._metric_evolution(metric_name, metric_agg)
+            metric_evolutions.append(metric_evo)
+        return metric_evolutions
+    
+    def metric_evolutions_per_project(self) -> list[MetricEvolution]:
         metric_evolutions = []
         for metric_name, metric_agg in self._metrics_data.names_and_aggregates:
             metric_evo = self._metric_evolution(metric_name, metric_agg)
