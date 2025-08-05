@@ -51,7 +51,7 @@ def test_invalid_repo_list():
 
     with pytest.raises(BadGitRepo) as e:
         GitEvo(repo=['invalid_repo'])
-    assert str(e.value) == 'invalid_repo is not a git repository'
+    assert str(e.value) == 'Invalid repository'
 
 def test_invalid_date_unit():
 

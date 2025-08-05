@@ -4,7 +4,7 @@ from gitevo import GitEvo
 from tests.conftest import remove_folder_if_exists
 
 
-def test_single_remote_repository():
+def test_remote_git_repository():
 
     remove_folder_if_exists('testrepo')
 
@@ -16,21 +16,7 @@ def test_single_remote_repository():
 
     remove_folder_if_exists('testrepo')
 
-def test_multiple_remote_repositories():
-
-    remove_folder_if_exists('testrepo')
-    remove_folder_if_exists('lib')
-
-    remote_repos = ['https://github.com/andrehora/testrepo', 'https://github.com/andrehora/library']
-    evo = GitEvo(repo=remote_repos, extension='.py')
-    result = evo.run()
-
-    assert len(result) == 2
-
-    remove_folder_if_exists('testrepo')
-    remove_folder_if_exists('library')
-
-def test_local_repositories():
+def test_local_git_repository():
 
     folder_name = 'projects'
     remove_folder_if_exists(folder_name)
@@ -44,10 +30,6 @@ def test_local_repositories():
     evo = GitEvo(repo='projects/library', extension='.py')
     result = evo.run()
     assert len(result) == 1
-
-    evo = GitEvo(repo=['projects/testrepo', 'projects/library'], extension='.py')
-    result = evo.run()
-    assert len(result) == 2
 
     evo = GitEvo(repo='projects', extension='.py')
     result = evo.run()

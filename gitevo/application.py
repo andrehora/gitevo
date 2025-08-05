@@ -205,6 +205,7 @@ class GitEvo:
         if isinstance(repo, str):
             # repo is remote
             if self._is_git_remote(repo):
+                print('Remote Git repository:', repo)
                 return [repo]
             else:
                 # repo is local dir
@@ -213,6 +214,7 @@ class GitEvo:
                 
                 # Check if repo is a git dir
                 if self._is_git_dir(repo):
+                    print('Local Git repository:', repo)
                     return [repo]
 
                 # Check if repo is a dir with git projects
@@ -223,10 +225,10 @@ class GitEvo:
                 print('Directory containing multiple Git repositories')
                 for path in paths:
                     if self._is_git_dir(path):
-                        print('- Found Git repo:', path)
+                        print('- Found Git repository:', path)
                         git_repos.append(path)
                     else:
-                        print('- Not a Git repo:', path)
+                        print('- Not a Git repository:', path)
                 return git_repos
         
         raise BadGitRepo('Invalid repository')
