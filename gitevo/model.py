@@ -38,7 +38,7 @@ class CommitResult:
 
 class ProjectResult:
 
-    def __init__(self, name: str):
+    def __init__(self, name: str = ''):
         self.name = name
         self.commit_results: list[CommitResult] = []
 
@@ -83,46 +83,27 @@ class ProjectResult:
 
 class GitEvoResult:
 
-    def __init__(self, report_title: str, report_filename: str, date_unit: str, 
-                 registered_metrics: list[MetricInfo], last_version_only: bool):
+    def __init__(self, report_title: str, report_filename: str, date_unit: str, registered_metrics: list[MetricInfo]):
         self.report_title = report_title
         self.report_filename = report_filename
         self.registered_metrics = registered_metrics
-        self.last_version_only = last_version_only
         DateUtils.date_unit = date_unit
 
-        self.project_results: list[ProjectResult] = []
-        self._metrics_data = MetricData()
-
-    def is_multi_projects(self) -> bool:
-        return len(self.project_results) > 1
-    
-    def results_per_project(self, filter_by_number_of_months: int) -> list['GitEvoResult']:
-        results = []
-        for project_result in self.project_results:
-            if len(project_result.commit_results) != filter_by_number_of_months:
-                print(f'Skipping project {project_result.name} with {len(project_result.commit_results)} commits')
-                continue
-            report_title = project_result.name
-            report_filename = project_result.name
-            result = GitEvoResult(report_title, report_filename, DateUtils.date_unit, 
-                                          self.registered_metrics, self.last_version_only)
-            result._metrics_data = self._metrics_data
-            result.add_project_result(project_result)
-            results.append(result)
-        return results
+        self.project_result = None
+        self._metric_data = MetricData()
 
     @property
     def metric_names(self) -> list[str]:
-        return self._metrics_data.names
-    
-    @property
-    def metric_dates(self) -> list[str]:
-        return DateUtils.formatted_dates(self._date_steps())
+        return self._metric_data.names
     
     @property
     def metric_groups(self):
-        return self._metrics_data._groups_and_names
+        return self._metric_data.groups_and_names
+    
+    @property
+    def metric_dates(self) -> list[str]:
+        date_steps = self.project_result.compute_date_steps()
+        return DateUtils.formatted_dates(date_steps)
     
     @property
     def metric_version_chart_types(self) -> dict[str, str]:
@@ -136,89 +117,37 @@ class GitEvoResult:
     def metric_tops_n(self) -> dict[str, str]:
         return {metric_info.group: metric_info.top_n for metric_info in self.registered_metrics}
     
-    def add_metric_aggregate(self, name: str, aggregate: str):
-        self._metrics_data.add_metric_aggregate(name, aggregate)
+    def add_metric_name(self, name: str):
+        self._metric_data.add_metric_name(name)
 
     def add_metric_group(self, name: str | None, group: str):
-        self._metrics_data.add_metric_group(name, group)
-
-    def add_project_result(self, project_result: ProjectResult):
-        self.project_results.append(project_result)
+        self._metric_data.add_metric_group(name, group)
     
     def metric_evolutions(self) -> list[MetricEvolution]:
         metric_evolutions = []
-        for metric_name, metric_agg in self._metrics_data.names_and_aggregates:
-            metric_evo = self._metric_evolution(metric_name, metric_agg)
+        for metric_name in self._metric_data.names:
+            metric_evo = self.project_result.metric_evolution(metric_name)
             metric_evolutions.append(metric_evo)
         return metric_evolutions
-    
-    def metric_evolutions_per_project(self) -> list[MetricEvolution]:
-        metric_evolutions = []
-        for metric_name, metric_agg in self._metrics_data.names_and_aggregates:
-            metric_evo = self._metric_evolution(metric_name, metric_agg)
-            metric_evolutions.append(metric_evo)
-        return metric_evolutions
-    
-    def _date_steps(self) -> list[date]:
-        dates = set()
-        for project_result in self.project_results:
-            project_dates = project_result.compute_date_steps()
-            dates.update(project_dates)
-        return sorted(list(dates))
-
-    def _metric_evolution(self, metric_name: str, aggregate: str) -> MetricEvolution:
-        
-        values_by_date = {date: [] for date in self.metric_dates}
-        for project_result in self.project_results:
-            metric_evolution = project_result.metric_evolution(metric_name)
-            for date, value in metric_evolution.dates_and_values:
-
-                if isinstance(value, list): values_by_date[date].extend(value)
-                else: values_by_date[date].append(value)
-        
-        # Aggregate values
-        values = []
-        for metric_values in values_by_date.values():
-
-            if not metric_values:
-                values.append(0)
-                continue
-            
-            value = None
-            if aggregate in ['sum', 'max', 'min']:
-                value = aggregate_basic(metric_values, aggregate)
-            if aggregate in ['median', 'mean', 'mode']:
-                value = aggregate_stat(metric_values, aggregate)
-            
-            assert value is not None
-            values.append(value)
-
-        return MetricEvolution(metric_name, self.metric_dates, values)
 
 class MetricData:
 
     def __init__(self):
-        self._names_and_aggregates: dict[str, str] = {}
-        self._groups_and_names: dict[str, set] = {}
+        self._names = []
+        self.groups_and_names: dict[str, set] = {}
 
     @property
     def names(self) -> list[str]:
-        return list(self._names_and_aggregates.keys())
-    
-    @property
-    def names_and_aggregates(self):
-        return self._names_and_aggregates.items()
+        return list(dict.fromkeys(self._names))
 
-    def add_metric_aggregate(self, name: str, aggregate: str):
-        if name in self._names_and_aggregates:
-            return
-        self._names_and_aggregates[name] = aggregate
+    def add_metric_name(self, name: str):
+        self._names.append(name)
 
     def add_metric_group(self, name: str | None, group: str):
         if name is None:
-            self._groups_and_names[group] = set()
+            self.groups_and_names[group] = set()
             return
 
-        if group not in self._groups_and_names:
-            self._groups_and_names[group] = {name}
-        self._groups_and_names[group].add(name)
+        if group not in self.groups_and_names:
+            self.groups_and_names[group] = {name}
+        self.groups_and_names[group].add(name)

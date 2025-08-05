@@ -1,14 +1,13 @@
 class MetricInfo:
     
     def __init__(self, name: str, callback, file_extension: str, categorical: bool,
-                 aggregate: str, group: str, version_chart_type: str, show_version_chart: bool,
+                 group: str, version_chart_type: str, show_version_chart: bool,
                  top_n: int):
         
         self._name = name
         self.callback = callback
         self.file_extension = file_extension
         self.categorical = categorical
-        self.aggregate = aggregate
         self._group = group
         self.version_chart_type = version_chart_type
         self.show_version_chart = show_version_chart
@@ -31,9 +30,3 @@ class MetricInfo:
         if self._group is None:
             return self.name
         return self._group.strip()
-    
-class BeforeCommitInfo:
-
-    def __init__(self, file_extension: str, callback: callable):
-        self.file_extension = file_extension
-        self.callback = callback

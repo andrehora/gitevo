@@ -51,14 +51,6 @@ def test_report_java(local_repo, clear_index):
     assert index_contains('2020')
     assert index_contains('2025')
 
-def test_last_version_only(local_repo, clear_index):
-    args = f'{local_repo} -r fastapi -l'.split()
-    result = GitEvoCLI(args).run()
-    assert result == 0
-    assert index_exists()
-    assert not index_contains('line')
-    assert index_contains('bar')
-
 def test_from(local_repo, clear_index):
     args = f'{local_repo} -r fastapi -f 2022'.split()
     result = GitEvoCLI(args).run()

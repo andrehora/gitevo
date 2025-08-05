@@ -12,7 +12,7 @@ def test_single_remote_repository():
     evo = GitEvo(repo=remote_repo, extension='.py')
     result = evo.run()
 
-    assert len(result.project_results) == 1
+    assert len(result) == 1
 
     remove_folder_if_exists('testrepo')
 
@@ -25,7 +25,7 @@ def test_multiple_remote_repositories():
     evo = GitEvo(repo=remote_repos, extension='.py')
     result = evo.run()
 
-    assert len(result.project_results) == 2
+    assert len(result) == 2
 
     remove_folder_if_exists('testrepo')
     remove_folder_if_exists('library')
@@ -39,18 +39,18 @@ def test_local_repositories():
 
     evo = GitEvo(repo='projects/testrepo', extension='.py')
     result = evo.run()
-    assert len(result.project_results) == 1
+    assert len(result) == 1
 
     evo = GitEvo(repo='projects/library', extension='.py')
     result = evo.run()
-    assert len(result.project_results) == 1
+    assert len(result) == 1
 
     evo = GitEvo(repo=['projects/testrepo', 'projects/library'], extension='.py')
     result = evo.run()
-    assert len(result.project_results) == 2
+    assert len(result) == 2
 
     evo = GitEvo(repo='projects', extension='.py')
     result = evo.run()
-    assert len(result.project_results) == 2
+    assert len(result) == 2
 
     remove_folder_if_exists(folder_name)

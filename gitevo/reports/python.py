@@ -44,7 +44,7 @@ def metrics(evo: GitEvo):
     def function_loc(commit: ParsedCommit):
         return commit.loc_by_type('function_definition', 'mean')
 
-    @evo.metric('Functions: def vs. async def', categorical=True, aggregate='sum')
+    @evo.metric('Functions: def vs. async def', categorical=True)
     def sync_async(commit: ParsedCommit):
         function_definitions = commit.find_nodes_by_type(['function_definition'])
         return ['async def' if as_str(func.child(0).text) == 'async' else 'def' for func in function_definitions]

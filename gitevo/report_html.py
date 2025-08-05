@@ -22,7 +22,6 @@ class HtmlReport:
         self.metric_show_version_charts = result.metric_show_version_charts
         self.metric_tops_n = result.metric_tops_n
         self.metric_evolutions = result.metric_evolutions()
-        self.last_version_only = result.last_version_only
         self._verbose = verbose
 
     def generate_html(self) -> str:
@@ -36,9 +35,7 @@ class HtmlReport:
     
     def _ensure_title(self, result: GitEvoResult) -> str:
         if result.report_title is None:
-            if result.is_multi_projects():
-                return 'All projects'
-            return result.project_results[0].name
+            return result.project_result.name
         return result.report_title
 
     def _json_data(self):
@@ -76,7 +73,7 @@ class HtmlReport:
                 version_msg = 'last version'
 
             # Build evolution chart
-            if len(self.metric_dates) >= 2 and not self.last_version_only:
+            if len(self.metric_dates) >= 2:
                 charts.append(evo_chart.evo_dict())
                 evo_msg = 'evolution'
             

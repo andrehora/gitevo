@@ -87,8 +87,6 @@ class GitEvoCLI:
         if parsed_args.month:
             self.date_unit = 'month'
 
-        self.last_version_only = parsed_args.last_version_only
-
     def run(self):
 
         report = report_mappings.get(self.report_type)
@@ -96,8 +94,7 @@ class GitEvoCLI:
                      extension=report.extension, 
                      from_year=self.from_year, 
                      to_year=self.to_year, 
-                     date_unit=self.date_unit, 
-                     last_version_only=self.last_version_only)
+                     date_unit=self.date_unit)
         report.metrics(evo)
         evo.run()
         return OK

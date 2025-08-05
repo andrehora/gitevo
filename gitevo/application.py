@@ -9,7 +9,7 @@ from treeminer.repo import TreeMinerRepo, Commit
 from treeminer.miners import BaseMiner
 
 from gitevo.model import GitEvoResult, ProjectResult, CommitResult, MetricResult
-from gitevo.info import MetricInfo, BeforeCommitInfo
+from gitevo.info import MetricInfo
 from gitevo.report_html import HtmlReport
 from gitevo.report_csv import TableReport
 from gitevo.utils import is_git_dir, stdout_msg, stdout_link, as_str, aggregate_stat, ensure_file_extension
@@ -21,16 +21,17 @@ class GitEvo:
                 *,
                 repo: str | list[str],
                 extension: str | None = None, 
+                
                 from_year: int | None = None,
                 to_year: int | None = None,
                 date_unit: str = 'year', 
-                last_version_only: bool = False,
-                report_title: str | None = None,
+
+                export_html_report: bool = True,
+                export_csv_report: bool = True,
                 report_filename: str = 'index',
-                export_html: bool = True,
-                export_csv: bool = True):
+                report_title: str | None = None):
                 
-        self.project_repos = self._check_git_projects(repo)
+        self.git_repos = self._ensure_git_repos(repo)
         
         if date_unit not in ['year', 'month']:
             raise BadDateUnit(f'date_unit must be year or month')
@@ -48,61 +49,48 @@ class GitEvo:
         self.date_unit = date_unit
         self.from_year = from_year
         self.to_year = to_year
-        self.last_version_only = last_version_only
         self.report_title = report_title
         self.report_filename = report_filename.strip()
-        self.export_html = export_html
-        self.export_csv = export_csv
+        self.export_html_report = export_html_report
+        self.export_csv_report = export_csv_report
 
         self.registered_metrics: list[MetricInfo] = []
-        self.registered_before_commits: list[BeforeCommitInfo] = []
-
         self._analyzed_commits: list[str] = []
-        self._repo = TreeMinerRepo(self.project_repos)
 
-    def add_language(self, extension: str, tree_sitter_language: object):
-        miner = GenericMiner
-        miner.extension = extension
-        miner.tree_sitter_language = tree_sitter_language
-        self._repo.add_miner(miner)
+    # def add_language(self, extension: str, tree_sitter_language: object):
+    #     miner = GenericMiner
+    #     miner.extension = extension
+    #     miner.tree_sitter_language = tree_sitter_language
+    #     self._repo.add_miner(miner)
     
-    def run(self) -> GitEvoResult:
+    def run(self) -> GitEvoResult | list[GitEvoResult]:
         print(f'Running GitEvo...')
-        result = self._compute_metrics()
-        self._export_html(result, self.export_html)
-        self._export_csv(result, self.export_csv)
-        return result
+        results = []
+        for git_repo in self.git_repos:
+            print('Processing repository:', git_repo)
+            result = self._compute_metrics(git_repo)
+            results.append(result)
+            self._export_html(result, self.export_html_report)
+            self._export_csv(result, self.export_csv_report)
+        return results
     
     def _export_csv(self, result: GitEvoResult, export_csv: bool):
         if not export_csv:
             return
         TableReport(result).export_csv()
-        if result.is_multi_projects():
-            for project_result in result.results_per_project(72):
-                TableReport(project_result).export_csv()
                 
     def _export_html(self, result: GitEvoResult, export_html: bool):
         if not export_html:
             return
         
-        html_paths = []
         html_path = HtmlReport(result).generate_html()
-        html_paths.append(html_path)
-
-        if result.is_multi_projects():
-            for project_result in result.results_per_project(72):
-                html_path = HtmlReport(project_result, verbose=False).generate_html()
-                html_paths.append(html_path)
-        
-        for html_path in html_paths:
-            print(self._wrote_msg(html_path))
+        print(self._wrote_msg(html_path))
 
     # metric decorator
     def metric(self, name: str = None,
                *,
                extension: str | None = None, 
                categorical: bool = False, 
-               aggregate: str = 'sum',
                group: str | None = None,
                version_chart_type: str = 'bar',
                show_version_chart: bool = True,
@@ -114,7 +102,6 @@ class GitEvo:
                            callback=func,
                            file_extension=ensure_file_extension(extension),
                            categorical=categorical,
-                           aggregate=aggregate,
                            group=group,
                            version_chart_type=version_chart_type,
                            show_version_chart=show_version_chart,
@@ -123,19 +110,10 @@ class GitEvo:
         
         return decorator
     
-    # before decorator
-    def before(self, file_extension: str | None = None):
+    def _compute_metrics(self, git_repository: str) -> GitEvoResult:
 
-        def decorator(func):
-            self.registered_before_commits.append(
-                BeforeCommitInfo(file_extension, callback=func,))    
-            return func
-        
-        return decorator
-    
-    def _compute_metrics(self) -> GitEvoResult:
-
-        result = GitEvoResult(self.report_title, self.report_filename, self.date_unit, self.registered_metrics, self.last_version_only)
+        tree_miner_repo = TreeMinerRepo(git_repository)
+        gitevo_result = GitEvoResult(self.report_title, self.report_filename, self.date_unit, self.registered_metrics)
         
         # Sanity checks on registered_metrics
         for metric_info in self.registered_metrics:
@@ -146,57 +124,37 @@ class GitEvo:
                 metric_info.file_extension = self.global_file_extension
             
             # Real names of the categorical metrics are known only at runtime, thus, now register None
-            result.add_metric_group(metric_info.name_or_none_for_categorical, metric_info.group)
-                
-        project_result = None
-        project_name = ''
+            gitevo_result.add_metric_group(metric_info.name_or_none_for_categorical, metric_info.group)
+        
+        project_name = None
         project_commits = set()
 
-        last_commit_hash = None
-        if self.last_version_only:
-            last_commit_hash = self._repo.lastest_commit.hash
+        project_result = ProjectResult()
+        gitevo_result.project_result = project_result
 
-        for commit in self._repo.commits:
+        for commit in tree_miner_repo.commits:
             
-            # Create new project result if new project name
-            if project_name != commit.project_name:
-                print(commit.project_name)
+            if project_name is None:
                 project_name = commit.project_name
-                project_commits = set()
-                project_result = ProjectResult(commit.project_name)
-                result.add_project_result(project_result)
+                project_result.name = project_name
 
-            if not self.last_version_only:
-                # Skip commit based on from and to year 
-                if commit.committer_date.year < self.from_year:
-                    continue
-                if commit.committer_date.year > self.to_year:
-                    continue
-                
-                # Skip commit if year or month is already analyzed
-                commit_year = commit.committer_date.year
-                selected_date = (commit_year, commit.committer_date.month) if self.date_unit == 'month' else commit_year
-                if selected_date in project_commits:
-                    continue
+            # Skip commit based on from and to year 
+            if commit.committer_date.year < self.from_year:
+                continue
+            if commit.committer_date.year > self.to_year:
+                continue
+            
+            # Skip commit if year or month is already analyzed
+            commit_year = commit.committer_date.year
+            selected_date = (commit_year, commit.committer_date.month) if self.date_unit == 'month' else commit_year
+            if selected_date in project_commits:
+                continue
 
-                project_commits.add(selected_date)
-            else:
-                # Skip commit based on last_commit_hash
-                if last_commit_hash != commit.hash:
-                    continue
-                selected_date = commit.committer_date
+            project_commits.add(selected_date)
 
             # Chache parsed commits for each file extension, eg, .py, .js, .java, etc
             parsed_commits = ParsedCommitCache(commit, self._all_file_extensions())
             print(f'- Date: {selected_date}, commit: {commit.hash[0:10]}, files: {parsed_commits.file_stats()}')
-            
-            # Iterate on the before commit
-            for before_commit_info in self.registered_before_commits:
-                file_extension = before_commit_info.file_extension
-                # Get parsed_commit, run the before commit callback, and update parsed_commits
-                parsed_commit = parsed_commits.get_parsed_commit_for(file_extension)
-                new_parsed_commit = before_commit_info.callback(parsed_commit)
-                parsed_commits.update_parsed_commit_for(file_extension, new_parsed_commit)
 
             # Iterate on each metric
             commit_result = CommitResult(commit.hash, commit.committer_date.date())
@@ -214,70 +172,62 @@ class GitEvo:
 
                     if not metric_value:
                         continue
-                        # raise BadReturnType(f'categorical metric {metric_info.name} should return list[str], not an empty list')
 
                     for real_name, value in Counter(metric_value).most_common():
-                        assert isinstance(real_name, str), f'categorical metric {metric_info.name} should return return list[str]'
+                        assert isinstance(real_name, str), f'categorical metric {metric_info.name} should return list[str]'
                         metric_result = MetricResult(name=real_name, value=value, date=commit_result.date)
                         commit_result.add_metric_result(metric_result)
                         
                         # Register the real name of the categorical metric
-                        result.add_metric_group(real_name, metric_info.group)
-                        result.add_metric_aggregate(real_name, metric_info.aggregate)
+                        gitevo_result.add_metric_name(real_name)
+                        gitevo_result.add_metric_group(real_name, metric_info.group)
                 
                 # Process numerical metrics
                 else:
 
-                    if not isinstance(metric_value, (int, float, list)):
-                        raise BadReturnType(f'numerical metric {metric_info.name} should return int, float, or list[int|float]')
+                    if not isinstance(metric_value, (int, float)):
+                        raise BadReturnType(f'numerical metric {metric_info.name} should return int or float')
 
                     metric_result = MetricResult(name=metric_info.name, value=metric_value, date=commit_result.date)
                     commit_result.add_metric_result(metric_result)
-                    result.add_metric_aggregate(metric_info.name, metric_info.aggregate)
+                    gitevo_result.add_metric_name(metric_info.name)
 
             project_result.add_commit_result(commit_result)
         
-        return result
+        return gitevo_result
     
-    def _check_git_projects(self, repo: str | list[str]) -> str | list[str]:
+    def _ensure_git_repos(self, repo: list[str]) -> list[str]:
 
         if not repo or repo is None:
             raise BadGitRepo('Invalid repository')
 
-        # project_path is str
+        # repo is str
         if isinstance(repo, str):
-            # Project_path is remote
+            # repo is remote
             if self._is_git_remote(repo):
-                return repo
+                return [repo]
             else:
-                # Project_path is local dir
+                # repo is local dir
                 if not os.path.isdir(repo):
                     raise BadGitRepo(f'{repo} is not a directory')
                 
-                # Check if project_path is a git dir
+                # Check if repo is a git dir
                 if self._is_git_dir(repo):
-                    return repo
+                    return [repo]
 
-                # Check if project_path is a dir with git projects
+                # Check if repo is a dir with git projects
                 paths = self._projects_dir(repo)
                 if not paths:
                     raise BadGitRepo(f'{repo} is not a directory with git repositories')
-                git_paths = []
+                git_repos = []
                 print('Directory containing multiple Git repositories')
                 for path in paths:
                     if self._is_git_dir(path):
                         print('- Found Git repo:', path)
-                        git_paths.append(path)
+                        git_repos.append(path)
                     else:
                         print('- Not a Git repo:', path)
-                return git_paths
-        
-        # project_path is list
-        if isinstance(repo, list):
-            for path in repo:
-                if not self._is_git_remote(path) and not self._is_git_dir(path):
-                    raise BadGitRepo(f'{path} is not a git repository')
-            return repo
+                return git_repos
         
         raise BadGitRepo('Invalid repository')
     
@@ -285,9 +235,6 @@ class GitEvo:
         
         if self.global_file_extension is None and metric_info.file_extension is None:
             raise FileExtensionNotFound(f'extension should be defined globally or in metric {metric_info.name}')
-            
-        if metric_info.aggregate not in ['median', 'mean', 'mode', 'sum', 'max', 'min']:
-            raise BadAggregate(f'aggregate in metric {metric_info.name} should be median, mean, mode, sum, max, or min, not {metric_info.aggregate}')
             
         if metric_info.version_chart_type not in ['donut', 'pie', 'bar', 'hbar']:
             raise BadVersionChart(f'version chart in {metric_info.name} should be donut, pie, bar, or hbar, not {metric_info.version_chart_type}')
@@ -349,19 +296,16 @@ class ParsedCommit:
             self._loc = sum([file.loc for file in self.parsed_files])
         return self._loc
     
-    def loc_by_type(self, node_type: str, aggregate: str | None = None) -> int | float | list[int]:
+    def loc_by_type(self, node_type: str, aggregate: str = 'median') -> int | float | list[int]:
 
         if aggregate is not None and aggregate not in ['median', 'mean', 'mode']:
             raise BadLOCAggregate(f'LOC aggregate should be median, mean, or mode')
         
         nodes = self.find_nodes_by_type([node_type])
         if not nodes:
-            return []
+            return 0
 
         locs = [len(as_str(node.text).split('\n')) for node in nodes]
-        if aggregate is None:
-            return locs
-        
         return aggregate_stat(locs, aggregate)
     
     def find_node_types(self, node_types: str | list[str] = None) -> list[str]:
