@@ -205,7 +205,7 @@ class GitEvo:
         if isinstance(repo, str):
             # repo is remote
             if self._is_git_remote(repo):
-                print('Remote Git repository:', repo)
+                print('Git URL:', repo)
                 return [repo]
             else:
                 # repo is local dir

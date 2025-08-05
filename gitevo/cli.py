@@ -15,7 +15,7 @@ def parse_args(args=None):
     parser.add_argument(
         'repo',
         type=str,
-        help='Git repository to analyze. Accepts a Git URL, a path to a local repository, or a directory containing multiple Git repositories'
+        help='Git repository to analyze. Accepts a Git URL, a local Git repository, or a directory containing multiple Git repositories'
     )
 
     parser.add_argument(
@@ -24,7 +24,7 @@ def parse_args(args=None):
         default='python',
         choices=['python', 'js', 'ts', 'java', 'fastapi'],
         type=str,
-        help='Report type to be generated. Default is python.'
+        help='Report to be generated. Default is python.'
     )
 
     parser.add_argument(
@@ -46,13 +46,6 @@ def parse_args(args=None):
         '--month',
         action='store_true',
         help='Set to analyze commits by month.'
-    )
-
-    parser.add_argument(
-        '-l',
-        '--last-version-only',
-        action='store_true',
-        help='Set to analyze the last version only.'
     )
 
     parser.add_argument(
