@@ -1,118 +1,118 @@
 import os
 from gitevo.cli import GitEvoCLI, main, gitevo_version
 
-def test_repo(local_repo, clear_index):
+def test_repo(local_repo, clear_reports):
     args = f'{local_repo}'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
-    assert index_exists()
-    assert index_contains('line')
-    assert index_contains('bar')
-    assert index_contains('2020')
-    assert index_contains('2025')
+    assert report_exists()
+    assert report_contains('line')
+    assert report_contains('bar')
+    assert report_contains('2020')
+    assert report_contains('2025')
 
-def test_report_python(local_repo, clear_index):
+def test_report_python(local_repo, clear_reports):
     args = f'{local_repo} -r python'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
-    assert index_exists()
-    assert index_contains('line')
-    assert index_contains('bar')
-    assert index_contains('2020')
-    assert index_contains('2025')
+    assert report_exists()
+    assert report_contains('line')
+    assert report_contains('bar')
+    assert report_contains('2020')
+    assert report_contains('2025')
 
-def test_report_js(local_repo, clear_index):
+def test_report_js(local_repo, clear_reports):
     args = f'{local_repo} -r js'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
-    assert index_exists()
-    assert index_contains('line')
-    assert index_contains('bar')
-    assert index_contains('2020')
-    assert index_contains('2025')
+    assert report_exists()
+    assert report_contains('line')
+    assert report_contains('bar')
+    assert report_contains('2020')
+    assert report_contains('2025')
 
-def test_report_ts(local_repo, clear_index):
+def test_report_ts(local_repo, clear_reports):
     args = f'{local_repo} -r ts'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
-    assert index_exists()
-    assert index_contains('line')
-    assert index_contains('bar')
-    assert index_contains('2020')
-    assert index_contains('2025')
+    assert report_exists()
+    assert report_contains('line')
+    assert report_contains('bar')
+    assert report_contains('2020')
+    assert report_contains('2025')
 
-def test_report_java(local_repo, clear_index):
+def test_report_java(local_repo, clear_reports):
     args = f'{local_repo} -r java'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
-    assert index_exists()
-    assert index_contains('line')
-    assert index_contains('bar')
-    assert index_contains('2020')
-    assert index_contains('2025')
+    assert report_exists()
+    assert report_contains('line')
+    assert report_contains('bar')
+    assert report_contains('2020')
+    assert report_contains('2025')
 
-def test_from(local_repo, clear_index):
+def test_from(local_repo, clear_reports):
     args = f'{local_repo} -r fastapi -f 2022'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
-    assert index_exists()
+    assert report_exists()
 
-    assert not index_contains('2021')
-    assert index_contains('2022')
-    assert index_contains('2023')
+    assert not report_contains('2021')
+    assert report_contains('2022')
+    assert report_contains('2023')
 
-def test_to(local_repo, clear_index):
+def test_to(local_repo, clear_reports):
     args = f'{local_repo} -r fastapi -t 2022'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
-    assert index_exists()
+    assert report_exists()
 
-    assert index_contains('2020')
-    assert index_contains('2021')
-    assert index_contains('2022')
-    assert not index_contains('2023')
+    assert report_contains('2020')
+    assert report_contains('2021')
+    assert report_contains('2022')
+    assert not report_contains('2023')
 
-def test_from_to(local_repo, clear_index):
+def test_from_to(local_repo, clear_reports):
     args = f'{local_repo} -r fastapi -f 2021 -t 2023'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
-    assert index_exists()
+    assert report_exists()
 
-    assert not index_contains('2020')
-    assert index_contains('2021')
-    assert index_contains('2022')
-    assert index_contains('2023')
-    assert not index_contains('2024')
+    assert not report_contains('2020')
+    assert report_contains('2021')
+    assert report_contains('2022')
+    assert report_contains('2023')
+    assert not report_contains('2024')
 
-def test_month(local_repo, clear_index):
+def test_month(local_repo, clear_reports):
     args = f'{local_repo} -m'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
-    assert index_exists()
-    assert index_contains('01/2020')
-    assert index_contains('01/2021')
-    assert index_contains('01/2022')
-    assert index_contains('01/2023')
-    assert index_contains('01/2024')
-    assert index_contains('01/2025')
+    assert report_exists()
+    assert report_contains('01/2020')
+    assert report_contains('01/2021')
+    assert report_contains('01/2022')
+    assert report_contains('01/2023')
+    assert report_contains('01/2024')
+    assert report_contains('01/2025')
 
 def test_invalid_repo():
     args = 'invalid_repo'.split()
     result = main(args)
     assert result == 1
-    assert not index_exists()
+    assert not report_exists()
 
 def test_version():
     assert 'GitEvo ' in gitevo_version()
 
-def index_exists():
-    return os.path.exists('index.html')
+def report_exists():
+    return os.path.exists('report_testrepo.html')
 
-def index_contains(token: str):
-    content = _open_index()
+def report_contains(token: str):
+    content = _open_report()
     return token in content
 
-def _open_index():
-    with open('index.html', 'r') as file:
+def _open_report():
+    with open('report_testrepo.html', 'r') as file:
         content = file.read()
     return content

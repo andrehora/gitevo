@@ -4,7 +4,7 @@ from gitevo import GitEvo
 from tests.conftest import remove_folder_if_exists
 
 
-def test_remote_git_repository():
+def test_remote_git_repository(clear_reports):
 
     remove_folder_if_exists('testrepo')
 
@@ -16,7 +16,7 @@ def test_remote_git_repository():
 
     remove_folder_if_exists('testrepo')
 
-def test_local_git_repository():
+def test_local_git_repository(clear_reports):
 
     folder_name = 'projects'
     remove_folder_if_exists(folder_name)

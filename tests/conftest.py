@@ -15,10 +15,16 @@ def local_repo():
     remove_folder_if_exists(repo_folder)
 
 @pytest.fixture
-def clear_index():
-    remove_file_if_exists('index.html')
+def clear_reports():
+    remove_file_if_exists('report_testrepo.html')
+    remove_file_if_exists('report_library.html')
+    remove_file_if_exists('report_testrepo.csv')
+    remove_file_if_exists('report_library.csv')
     yield
-    remove_file_if_exists('index.html')
+    remove_file_if_exists('report_testrepo.html')
+    remove_file_if_exists('report_library.html')
+    remove_file_if_exists('report_testrepo.csv')
+    remove_file_if_exists('report_library.csv')
 
 def remove_folder_if_exists(folder_name):
     if os.path.exists(folder_name):

@@ -14,8 +14,9 @@ class HtmlReport:
 
     def __init__(self, result: GitEvoResult, verbose: bool = False):
 
+        self.report_filename = self._ensure_filename(result)
         self.report_title = self._ensure_title(result)
-        self.report_filename = f'{result.report_filename}.html'
+
         self.metric_dates = result.metric_dates
         self.metric_groups = result.metric_groups
         self.metric_version_chart_types = result.metric_version_chart_types
@@ -24,7 +25,7 @@ class HtmlReport:
         self.metric_evolutions = result.metric_evolutions()
         self._verbose = verbose
 
-    def generate_html(self) -> str:
+    def export_html(self) -> str:
         json_data = self._json_data()
         template = self._read_template()
         content = self._replace_json_data(template, json_data)
@@ -32,6 +33,12 @@ class HtmlReport:
         content = self._replace_created_date(content)
         self._write_html(content)
         return os.path.join(os.getcwd(), self.report_filename)
+    
+    def _ensure_filename(self, result: GitEvoResult) -> str:
+        if result.report_filename is None:
+            filename = f'report_{result.project_result.name}.html'
+            return filename
+        return result.report_filename
     
     def _ensure_title(self, result: GitEvoResult) -> str:
         if result.report_title is None:

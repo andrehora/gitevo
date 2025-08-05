@@ -28,9 +28,9 @@ class GitEvo:
 
                 export_html_report: bool = True,
                 export_csv_report: bool = True,
-                report_filename: str = 'index',
+                report_filename: str | None = None,
                 report_title: str | None = None):
-                
+        
         self.git_repos = self._ensure_git_repos(repo)
         
         if date_unit not in ['year', 'month']:
@@ -49,8 +49,14 @@ class GitEvo:
         self.date_unit = date_unit
         self.from_year = from_year
         self.to_year = to_year
+
+        self.report_filename = report_filename
+        if self.report_filename:
+            self.report_filename = self.report_filename.strip()
         self.report_title = report_title
-        self.report_filename = report_filename.strip()
+        if self.report_title:
+            self.report_title = self.report_title.strip()
+        
         self.export_html_report = export_html_report
         self.export_csv_report = export_csv_report
 
@@ -70,21 +76,21 @@ class GitEvo:
             print('Processing repository:', git_repo)
             result = self._compute_metrics(git_repo)
             results.append(result)
-            self._export_html(result, self.export_html_report)
-            self._export_csv(result, self.export_csv_report)
+            self._export_html(result)
+            self._export_csv(result)
         return results
-    
-    def _export_csv(self, result: GitEvoResult, export_csv: bool):
-        if not export_csv:
-            return
-        TableReport(result).export_csv()
                 
-    def _export_html(self, result: GitEvoResult, export_html: bool):
-        if not export_html:
+    def _export_html(self, result: GitEvoResult):
+        if not self.export_html_report:
             return
-        
-        html_path = HtmlReport(result).generate_html()
-        print(self._wrote_msg(html_path))
+        path = HtmlReport(result).export_html()
+        print(self._write_msg('HTML', path))
+
+    def _export_csv(self, result: GitEvoResult):
+        if not self.export_csv_report:
+            return
+        path = TableReport(result).export_csv()
+        print(self._write_msg('CSV', path))
 
     # metric decorator
     def metric(self, name: str = None,
@@ -251,9 +257,9 @@ class GitEvo:
     def _projects_dir(self, folder_path: str):
         return [str(d.resolve()) for d in pathlib.Path(folder_path).iterdir() if d.is_dir()]
     
-    def _wrote_msg(self, html_path: str) -> str:
-        html_link = stdout_link(html_path, f'file://{html_path}')
-        msg =  f'HTML report: {html_link}'
+    def _write_msg(self, format: str, path: str) -> str:
+        link = stdout_link(path, f'file://{path}')
+        msg =  f'{format} report: {link}'
         return stdout_msg(msg)
             
     def _all_file_extensions(self) -> set[str]:

@@ -1,5 +1,8 @@
 ## Version 0.1.3
 Unreleased
+- Add CSV report
+- Change default report name to 'report_<project_name>'
+- Remove aggregate, last_version_only, and before
 
 ## Version 0.1.2
 Released 2025-04-22
