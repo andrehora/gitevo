@@ -2,7 +2,7 @@ from gitevo import GitEvo, ParsedCommit
 
 
 evo = GitEvo(repo='../projects/python/flask', extension='.py', 
-             report_name='index_python.html', from_year=2015, date_unit='year')
+             report_filename='flask', from_year=2015, date_unit='year')
 
 @evo.metric('Lines of code (LOC)', show_version_chart=False)
 def files(commit: ParsedCommit):
@@ -30,7 +30,7 @@ def class_loc(commit: ParsedCommit):
 def function_loc(commit: ParsedCommit):
     return commit.loc_by_type('function_definition', 'mean')
 
-@evo.metric('Functions: def vs. async def', categorical=True, aggregate='sum', version_chart_type='donut')
+@evo.metric('Functions: def vs. async def', categorical=True, version_chart_type='donut')
 def sync_async(commit: ParsedCommit):
     function_definitions = commit.find_nodes_by_type(['function_definition'])
     return ['async def' if as_str(func.child(0).text) == 'async' else 'def' for func in function_definitions]

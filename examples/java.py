@@ -29,35 +29,35 @@ def production_files(commit: ParsedCommit):
 def test_files(commit: ParsedCommit):
     return len([file for file in commit.parsed_files if 'test' in file.name])
 
-@evo.metric('Classes, interfaces, and records', aggregate='sum', categorical=True)
+@evo.metric('Classes, interfaces, and records', categorical=True)
 def type_definitions(commit: ParsedCommit):
     return commit.find_node_types(['class_declaration', 'interface_declaration', 'record_declaration'])
 
-@evo.metric('Methods', aggregate='sum', show_version_chart=False)
+@evo.metric('Methods', show_version_chart=False)
 def type_definitions(commit: ParsedCommit):
     return commit.count_nodes(['method_declaration'])
 
-@evo.metric('Median method LOC', aggregate='median', show_version_chart=False)
+@evo.metric('Median method LOC', show_version_chart=False)
 def functions(commit: ParsedCommit):
     return commit.loc_by_type('method_declaration', 'median')
 
-@evo.metric('Conditionals', aggregate='sum', categorical=True)
+@evo.metric('Conditionals', categorical=True)
 def conditionals(commit: ParsedCommit):
     return commit.find_node_types(['if_statement', 'switch_expression', 'ternary_expression'])
 
-@evo.metric('Switches', aggregate='sum', categorical=True, show_version_chart=False)
+@evo.metric('Switches', categorical=True, show_version_chart=False)
 def conditionals(commit: ParsedCommit):
     return commit.find_node_types(['switch_block_statement_group', 'switch_rule'])
 
-@evo.metric('Loops', aggregate='sum', categorical=True)
+@evo.metric('Loops', categorical=True)
 def loops(commit: ParsedCommit):
     return commit.find_node_types(['for_statement', 'while_statement', 'enhanced_for_statement', 'do_statement'])
 
-@evo.metric('Exception statements', aggregate='sum', categorical=True)
+@evo.metric('Exception statements', categorical=True)
 def expections(commit: ParsedCommit):
     return commit.find_node_types(['try_statement', 'throw_statement'])
 
-@evo.metric('Comments', aggregate='sum', categorical=True)
+@evo.metric('Comments', categorical=True)
 def comments(commit: ParsedCommit):
     return commit.find_node_types(['block_comment', 'line_comment'])
 

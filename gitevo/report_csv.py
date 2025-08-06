@@ -35,8 +35,8 @@ class TableReport:
         if result.report_filename is None:
             filename = f'report_{result.project_result.name}.csv'
             return filename
-        return result.report_filename
-    
+        return f'{result.report_filename}.csv'
+
     def _export_csv(self, data: list[list[str]]) -> None:
         with open(self.report_filename, mode="w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)

@@ -1,75 +1,75 @@
 from gitevo import GitEvo, ParsedCommit
 
 
-evo = GitEvo(report_title='JavaScript', report_name='index_js.html', 
+evo = GitEvo(report_title='JavaScript', report_filename='svelte', 
              repo='../projects/javascript/svelte', extension='.js', 
              date_unit='year', from_year=2020)
 
-@evo.metric('JavaScript files', aggregate='sum', show_version_chart=False)
+@evo.metric('JavaScript files', show_version_chart=False)
 def files(commit: ParsedCommit):
     return len(commit.parsed_files)
 
-@evo.metric('LOC', aggregate='sum', show_version_chart=False)
+@evo.metric('LOC', show_version_chart=False)
 def files(commit: ParsedCommit):
     return commit.loc
 
-@evo.metric('==', aggregate='sum', group='equality (total)')
+@evo.metric('==', group='equality (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes('==')
 
-@evo.metric('===', aggregate='sum', group='equality (total)')
+@evo.metric('===', group='equality (total)')
 def namedtuple(commit: ParsedCommit):
     return commit.count_nodes('===')
 
 
 
-@evo.metric('var total', aggregate='sum', group='let vs. var (total)')
+@evo.metric('var total', group='let vs. var (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['var'])
 
-@evo.metric('let total', aggregate='sum', group='let vs. var (total)')
+@evo.metric('let total', group='let vs. var (total)')
 def namedtuple(commit: ParsedCommit):
     return commit.count_nodes(['let'])
 
 
 
-@evo.metric('var', aggregate='median', group='let vs. var')
+@evo.metric('var', group='let vs. var')
 def variable_declarations(commit: ParsedCommit):
     var_count = commit.count_nodes(['var'])
     total = commit.loc / 1000
     return ratio(var_count, total)
 
-@evo.metric('let', aggregate='median', group='let vs. var')
+@evo.metric('let', group='let vs. var')
 def variable_declarations(commit: ParsedCommit):
     let_count = commit.count_nodes(['let'])
     total = commit.loc / 1000
     return ratio(let_count, total)
 
-@evo.metric('arrow function total', aggregate='sum', group='functions (total)')
+@evo.metric('arrow function total', group='functions (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['arrow_function'])
 
-@evo.metric('function declaration total', aggregate='sum', group='functions (total)')
+@evo.metric('function declaration total', group='functions (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['function_declaration'])
 
-@evo.metric('function expression total', aggregate='sum', group='functions (total)')
+@evo.metric('function expression total', group='functions (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['function_expression'])
 
-@evo.metric('arrow function', aggregate='median', group='functions')
+@evo.metric('arrow function', group='functions')
 def definitions(commit: ParsedCommit):
     arrow_function_count = commit.count_nodes(['arrow_function'])
     total = commit.loc / 1000
     return ratio(arrow_function_count, total)
 
-@evo.metric('function declaration', aggregate='median', group='functions')
+@evo.metric('function declaration', group='functions')
 def definitions(commit: ParsedCommit):
     function_declaration_count = commit.count_nodes(['function_declaration'])
     total = commit.loc / 1000
     return ratio(function_declaration_count, total)
 
-@evo.metric('function expression', aggregate='median', group='functions')
+@evo.metric('function expression', group='functions')
 def definitions(commit: ParsedCommit):
     function_expression_count = commit.count_nodes(['function_expression'])
     total = commit.loc / 1000

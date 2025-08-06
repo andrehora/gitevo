@@ -38,7 +38,7 @@ class HtmlReport:
         if result.report_filename is None:
             filename = f'report_{result.project_result.name}.html'
             return filename
-        return result.report_filename
+        return f'{result.report_filename}.html'
     
     def _ensure_title(self, result: GitEvoResult) -> str:
         if result.report_title is None:
