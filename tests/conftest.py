@@ -9,18 +9,20 @@ from git import Repo
 def local_repo():
     repo_folder = 'testrepo'
     remove_folder_if_exists(repo_folder)
+    remove_report_if_exists()
     repo = Repo.clone_from(url='https://github.com/andrehora/testrepo', to_path=repo_folder)
     yield repo_folder
     repo.close()
     remove_folder_if_exists(repo_folder)
+    remove_report_if_exists()
 
 @pytest.fixture
 def clear_reports():
-    remove_file_if_exists('report_testrepo.html')
-    remove_file_if_exists('report_library.html')
-    remove_file_if_exists('report_testrepo.csv')
-    remove_file_if_exists('report_library.csv')
+    remove_report_if_exists()
     yield
+    remove_report_if_exists()
+
+def remove_report_if_exists():
     remove_file_if_exists('report_testrepo.html')
     remove_file_if_exists('report_library.html')
     remove_file_if_exists('report_testrepo.csv')
