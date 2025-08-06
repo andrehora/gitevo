@@ -3,7 +3,7 @@ import argparse
 from importlib.metadata import version
 
 from gitevo import GitEvo
-from gitevo.cli_reports import report_mappings
+from gitevo.reports import report_mappings
 
 
 OK, ERR = 0, 1
@@ -20,7 +20,7 @@ def parse_args(args=None):
 
     parser.add_argument(
         '-r',
-        '--report-type',
+        '--report',
         default='python',
         choices=report_mappings.keys(),
         type=str,
@@ -72,7 +72,7 @@ class GitEvoCLI:
         parsed_args = parse_args(args)
 
         self.repo = parsed_args.repo
-        self.report_type = parsed_args.report_type
+        self.report = parsed_args.report
         self.from_year = parsed_args.from_year
         self.to_year = parsed_args.to_year
         
@@ -82,7 +82,7 @@ class GitEvoCLI:
 
     def run(self):
 
-        report = report_mappings.get(self.report_type)
+        report = report_mappings.get(self.report)
         evo = GitEvo(repo=self.repo, 
                      extension=report.extension, 
                      from_year=self.from_year, 
