@@ -19,7 +19,7 @@ class GitEvo:
 
     def __init__(self,
                 *,
-                repo: str | list[str],
+                repo: str,
                 extension: str | None = None, 
                 
                 from_year: int | None = None,
@@ -202,7 +202,7 @@ class GitEvo:
         
         return gitevo_result
     
-    def _ensure_git_repos(self, repo: list[str]) -> list[str]:
+    def _ensure_git_repos(self, repo: str) -> list[str]:
 
         if not repo or repo is None:
             raise BadGitRepo('Invalid repository')
