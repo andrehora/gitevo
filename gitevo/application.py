@@ -219,7 +219,7 @@ class GitEvo:
                     raise BadGitRepo(f'{repo} is not a directory')
                 
                 # Check if repo is a git dir
-                if self._is_git_dir(repo):
+                if is_git_dir(repo):
                     # print('Local Git repository:', repo)
                     return [repo]
 
@@ -230,7 +230,7 @@ class GitEvo:
                 git_repos = []
                 print('Directory containing multiple Git repositories')
                 for path in paths:
-                    if self._is_git_dir(path):
+                    if is_git_dir(path):
                         print('- Found Git repository:', path)
                         git_repos.append(path)
                     else:
@@ -246,10 +246,6 @@ class GitEvo:
             
         if metric_info.version_chart_type not in ['donut', 'pie', 'bar', 'hbar']:
             raise BadVersionChart(f'version chart in {metric_info.name} should be donut, pie, bar, or hbar, not {metric_info.version_chart_type}')
-    
-    def _is_git_dir(self, project_path):
-        git_path = os.path.join(project_path, '.git')
-        return is_git_dir(git_path)
     
     def _is_git_remote(self, repo: str) -> bool:
         return repo.startswith(("git@", "https://", "http://", "git://"))

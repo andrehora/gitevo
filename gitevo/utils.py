@@ -6,8 +6,12 @@ import os.path as osp
 from datetime import date
 from gitevo.exceptions import BadGitRepo
 
+def is_git_dir(project_path):
+    git_path = os.path.join(project_path, '.git')
+    return _is_git_dir(git_path)
 
-def is_git_dir(d: str) -> bool:
+
+def _is_git_dir(d: str) -> bool:
     # From GitPython
     if osp.isdir(d):
         if (osp.isdir(osp.join(d, "objects")) or "GIT_OBJECT_DIRECTORY" in os.environ) and osp.isdir(

@@ -55,8 +55,7 @@ def test_formatted_dates_month():
                                                 '01/2001', '02/2001', '03/2001', '04/2001']
     
 def test_is_git_dir(local_repo):
-    git_repo = os.path.join(local_repo, '.git')
-    assert is_git_dir(git_repo)
+    assert is_git_dir(local_repo)
 
 def test_is_notgit_dir():
     assert not is_git_dir('gitevo')
