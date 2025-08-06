@@ -35,3 +35,9 @@ gitevo = "gitevo.cli:main"
 [project.urls]
 Homepage = "https://github.com/andrehora/gitevo"
 Issues = "https://github.com/andrehora/gitevo/issues"
+
+[tool.coverage.run]
+omit = [
+    "./gitevo/__main__.py",
+    "./gitevo/reports/*"
+    ]

@@ -26,8 +26,8 @@ class GitEvo:
                 to_year: int | None = None,
                 date_unit: str = 'year', 
 
-                export_html_report: bool = True,
-                export_csv_report: bool = True,
+                export_html: bool = True,
+                export_csv: bool = True,
                 report_filename: str | None = None,
                 report_title: str | None = None):
         
@@ -57,8 +57,8 @@ class GitEvo:
         if self.report_title:
             self.report_title = self.report_title.strip()
         
-        self.export_html_report = export_html_report
-        self.export_csv_report = export_csv_report
+        self.export_html_report = export_html
+        self.export_csv_report = export_csv
 
         self.registered_metrics: list[MetricInfo] = []
         self._analyzed_commits: list[str] = []

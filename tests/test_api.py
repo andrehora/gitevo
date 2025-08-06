@@ -1,4 +1,5 @@
 import pytest
+import os
 
 from datetime import date
 from gitevo import GitEvo, ParsedCommit
@@ -478,3 +479,69 @@ def test_find_node_types_all(local_repo):
     evolutions = result.metric_evolutions()
 
     assert len(evolutions) > 20
+
+def test_export_html(local_repo, clear_reports):
+    evo = GitEvo(repo=local_repo, extension='.py', date_unit='month', export_html=True, export_csv=False)
+
+    @evo.metric('Single metric')
+    def single_metric(commit: ParsedCommit):
+        return 1
+    
+    evo.run()
+
+    assert report_exists('report_testrepo.html')
+    assert not report_exists('report_testrepo.csv')
+
+def test_export_csv(local_repo, clear_reports):
+    evo = GitEvo(repo=local_repo, extension='.py', date_unit='month', export_html=False, export_csv=True)
+
+    @evo.metric('Single metric')
+    def single_metric(commit: ParsedCommit):
+        return 1
+    
+    evo.run()
+
+    assert not report_exists('report_testrepo.html')
+    assert report_exists('report_testrepo.csv')
+
+def test_export_html_and_csv(local_repo, clear_reports):
+    evo = GitEvo(repo=local_repo, extension='.py', date_unit='month', export_html=True, export_csv=True)
+
+    @evo.metric('Single metric')
+    def single_metric(commit: ParsedCommit):
+        return 1
+    
+    evo.run()
+
+    assert report_exists('report_testrepo.html')
+    assert report_exists('report_testrepo.csv')
+
+def test_export_html_and_csv_with_report_custom(local_repo):
+
+    filename = 'foo'
+    html_filename = f'{filename}.html'
+    csv_filename = f'{filename}.csv'
+
+    remove_file_if_exists(html_filename)
+    remove_file_if_exists(csv_filename)
+
+    evo = GitEvo(repo=local_repo, extension='.py', date_unit='month', export_html=True, export_csv=True, report_filename=filename, report_title='bar')
+
+    @evo.metric('Single metric', version_chart_type='donut')
+    def single_metric(commit: ParsedCommit):
+        return 1
+    
+    evo.run()
+
+    assert report_exists(html_filename)
+    assert report_exists(csv_filename)
+
+    remove_file_if_exists(html_filename)
+    remove_file_if_exists(csv_filename)
+
+def report_exists(report_name):
+    return os.path.exists(report_name)
+
+def remove_file_if_exists(filename):
+    if os.path.exists(filename):
+        os.remove(filename)

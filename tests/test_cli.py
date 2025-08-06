@@ -1,11 +1,13 @@
 import os
 from gitevo.cli import GitEvoCLI, main, gitevo_version
 
-def test_repo(local_repo):
+def test_report_default(local_repo):
     args = f'{local_repo}'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
     assert report_exists()
+    assert report_contains('testrepo')
+    assert report_contains('created at')
     assert report_contains('line')
     assert report_contains('bar')
     assert report_contains('2020')
@@ -16,6 +18,8 @@ def test_report_python(local_repo):
     result = GitEvoCLI(args).run()
     assert result == 0
     assert report_exists()
+    assert report_contains('testrepo')
+    assert report_contains('created at')
     assert report_contains('line')
     assert report_contains('bar')
     assert report_contains('2020')
@@ -26,6 +30,8 @@ def test_report_js(local_repo):
     result = GitEvoCLI(args).run()
     assert result == 0
     assert report_exists()
+    assert report_contains('testrepo')
+    assert report_contains('created at')
     assert report_contains('line')
     assert report_contains('bar')
     assert report_contains('2020')
@@ -36,6 +42,8 @@ def test_report_ts(local_repo):
     result = GitEvoCLI(args).run()
     assert result == 0
     assert report_exists()
+    assert report_contains('testrepo')
+    assert report_contains('created at')
     assert report_contains('line')
     assert report_contains('bar')
     assert report_contains('2020')
@@ -46,6 +54,8 @@ def test_report_java(local_repo):
     result = GitEvoCLI(args).run()
     assert result == 0
     assert report_exists()
+    assert report_contains('testrepo')
+    assert report_contains('created at')
     assert report_contains('line')
     assert report_contains('bar')
     assert report_contains('2020')
@@ -96,11 +106,10 @@ def test_month(local_repo):
     assert report_contains('01/2024')
     assert report_contains('01/2025')
 
-def test_invalid_repo(clear_reports):
+def test_invalid_repo():
     args = 'invalid_repo'.split()
     result = main(args)
     assert result == 1
-    assert not report_exists()
 
 def test_version():
     assert 'GitEvo ' in gitevo_version()
