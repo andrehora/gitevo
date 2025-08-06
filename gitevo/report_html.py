@@ -12,7 +12,7 @@ class HtmlReport:
     TITLE_PLACEHOLDER = '{{TITLE}}'
     CREATED_DATE_PLACEHOLDER = '{{CREATED_DATE}}'
 
-    def __init__(self, result: GitEvoResult, verbose: bool = False):
+    def __init__(self, result: GitEvoResult):
 
         self.report_filename = self._ensure_filename(result)
         self.report_title = self._ensure_title(result)
@@ -23,7 +23,6 @@ class HtmlReport:
         self.metric_show_version_charts = result.metric_show_version_charts
         self.metric_tops_n = result.metric_tops_n
         self.metric_evolutions = result.metric_evolutions()
-        self._verbose = verbose
 
     def export_html(self) -> str:
         json_data = self._json_data()
@@ -50,8 +49,6 @@ class HtmlReport:
 
     def _build_charts(self) -> list[dict]:
         charts = []
-        if self._verbose:
-            print('Exported metrics:')
         cont = 0
         for group_name, metric_names in self.metric_groups.items():
             assert group_name in self.metric_tops_n
@@ -59,15 +56,12 @@ class HtmlReport:
             
             group_evolution = self._find_metric_evolutions(metric_names)
             if not group_evolution:
-                if self._verbose:
-                    print(f'{cont} - {group_name} -> no data')
                 continue
 
             top_n = self.metric_tops_n[group_name]
             
             # Build chart
             evo_chart = Chart(group_name, self.metric_dates, group_evolution, top_n)
-            evo_msg, version_msg = '', ''
 
             # Build last version chart
             assert group_name in self.metric_version_chart_types
@@ -77,19 +71,10 @@ class HtmlReport:
             show_version_chart = self.metric_show_version_charts[group_name]
             if show_version_chart:
                 charts.append(evo_chart.version_dict(version_chart_type))
-                version_msg = 'last version'
 
             # Build evolution chart
             if len(self.metric_dates) >= 2:
                 charts.append(evo_chart.evo_dict())
-                evo_msg = 'evolution'
-            
-            if version_msg and evo_msg: msg = f'{version_msg} and {evo_msg}'
-            elif version_msg: msg = version_msg
-            elif evo_msg: msg = evo_msg
-            else: msg = 'no data'
-            if self._verbose:
-                print(f'{cont} - {group_name} -> {msg}')
 
         return charts
             

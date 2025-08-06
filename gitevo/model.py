@@ -14,10 +14,6 @@ class MetricEvolution:
     def values_as_str(self) -> list[str]:
         return [str(value) for value in self.values]
     
-    @property
-    def dates_and_values(self):
-        return list(zip(self.dates, self.values))
-    
 class MetricResult:
 
     def __init__(self, name: str, value: int | float, date: date, is_list: bool = False):
