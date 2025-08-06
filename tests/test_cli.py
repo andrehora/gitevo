@@ -22,7 +22,7 @@ def test_report_python(local_repo, clear_reports):
     assert report_contains('2025')
 
 def test_report_js(local_repo, clear_reports):
-    args = f'{local_repo} -r js'.split()
+    args = f'{local_repo} -r javascript'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
     assert report_exists()
@@ -32,7 +32,7 @@ def test_report_js(local_repo, clear_reports):
     assert report_contains('2025')
 
 def test_report_ts(local_repo, clear_reports):
-    args = f'{local_repo} -r ts'.split()
+    args = f'{local_repo} -r typescript'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
     assert report_exists()
@@ -52,7 +52,7 @@ def test_report_java(local_repo, clear_reports):
     assert report_contains('2025')
 
 def test_from(local_repo, clear_reports):
-    args = f'{local_repo} -r fastapi -f 2022'.split()
+    args = f'{local_repo} -r python_fastapi -f 2022'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
     assert report_exists()
@@ -62,7 +62,7 @@ def test_from(local_repo, clear_reports):
     assert report_contains('2023')
 
 def test_to(local_repo, clear_reports):
-    args = f'{local_repo} -r fastapi -t 2022'.split()
+    args = f'{local_repo} -r python_fastapi -t 2022'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
     assert report_exists()
@@ -73,7 +73,7 @@ def test_to(local_repo, clear_reports):
     assert not report_contains('2023')
 
 def test_from_to(local_repo, clear_reports):
-    args = f'{local_repo} -r fastapi -f 2021 -t 2023'.split()
+    args = f'{local_repo} -r python_fastapi -f 2021 -t 2023'.split()
     result = GitEvoCLI(args).run()
     assert result == 0
     assert report_exists()

@@ -1,5 +1,5 @@
 from gitevo import GitEvo, ParsedCommit
-from gitevo.reports.fastapi import FastAPICommit
+from gitevo.reports.python_fastapi import FastAPICommit
 
 
 remote = 'https://github.com/fastapi/full-stack-fastapi-template'

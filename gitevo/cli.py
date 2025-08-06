@@ -15,14 +15,14 @@ def parse_args(args=None):
     parser.add_argument(
         'repo',
         type=str,
-        help='Git repository to analyze. Accepts a Git URL, a local Git repository, or a directory containing multiple Git repositories'
+        help='Git repository to analyze. Accepts a Git URL, a local Git repository, or a directory containing multiple Git repositories. Example: gitevo https://github.com/pallets/flask'
     )
 
     parser.add_argument(
         '-r',
         '--report-type',
         default='python',
-        choices=['python', 'js', 'ts', 'java', 'fastapi'],
+        choices=report_mappings.keys(),
         type=str,
         help='Report to be generated. Default is python.'
     )

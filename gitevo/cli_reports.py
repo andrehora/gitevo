@@ -1,10 +1,16 @@
-from gitevo.reports import python, javascript, typescript, java, fastapi
+from gitevo.reports import (
+    python, 
+    python_fastapi, 
+    javascript,
+    typescript, 
+    java,
+)
 
 
 report_mappings = {
     'python': python,
-    'js': javascript,
-    'ts': typescript,
+    'python_fastapi': python_fastapi,
+    'javascript': javascript,
+    'typescript': typescript,
     'java': java,
-    'fastapi': fastapi,
 }
