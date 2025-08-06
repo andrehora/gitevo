@@ -1,5 +1,7 @@
+import os
+
 from datetime import date
-from gitevo.utils import DateUtils
+from gitevo.utils import DateUtils, is_git_dir
 
 def test_date_range_year():
     DateUtils.date_unit = 'year'
@@ -51,3 +53,10 @@ def test_formatted_dates_month():
                                                 '05/2000', '06/2000', '07/2000', '08/2000', 
                                                 '09/2000', '10/2000', '11/2000', '12/2000', 
                                                 '01/2001', '02/2001', '03/2001', '04/2001']
+    
+def test_is_git_dir(local_repo):
+    git_repo = os.path.join(local_repo, '.git')
+    assert is_git_dir(git_repo)
+
+def test_is_notgit_dir():
+    assert not is_git_dir('gitevo')
