@@ -1,7 +1,12 @@
-## Version 0.1.3
+## Version 0.1.4
 Unreleased
+
+## Version 0.1.3
+Released 2025-08-07
 - Add CSV report
 - Change default report name to 'report_<project_name>'
+- Improve tests
+- Improve exception handling
 - Remove aggregate, last_version_only, and before
 
 ## Version 0.1.2

@@ -28,27 +28,24 @@ pip install gitevo
 
 Analyzing the evolution of a Git repository:
 
-```
-$ gitevo -r <python|js|ts|fastapi> <git_repo>
-```
+```shell
+$ gitevo -r {python|python_fastapi|javascript|typescript|java} <git_repo>
 
-For example:
-
-```
+# For example:
 $ gitevo -r python https://github.com/pallets/flask
-$ gitevo -r js https://github.com/expressjs/express
-$ gitevo -r ts https://github.com/vuejs/core
+$ gitevo -r javascript https://github.com/expressjs/express
+$ gitevo -r typescript https://github.com/vuejs/core
 $ gitevo -r java https://github.com/mockito/mockito
-$ gitevo -r fastapi https://github.com/fastapi/fastapi
+$ gitevo -r python_fastapi https://github.com/fastapi/fastapi
 ```
 
-`git_repo` accepts (1) a Git URL, (2) a path to a local repository, or (3) a directory containing multiple Git repositories:
+`git_repo` accepts (1) a Git URL, (2) a local repository, or (3) a directory containing multiple Git repositories:
 
 ```shell
 # 1. Git URL
 $ gitevo -r python https://github.com/pallets/flask
 
-# 2. Path to a local repository
+# 2. Local repository
 $ git clone https://github.com/pallets/flask
 $ gitevo -r python flask
 
@@ -64,24 +61,23 @@ $ gitevo -r python .
 
 ```
 $ gitevo --help
-usage: gitevo [-h] [-r {python,js,ts,java,fastapi}] [-f FROM_YEAR] [-t TO_YEAR] [-m] [-l] [-v] repo
+gitevo % gitevo --help
+usage: gitevo [-h] [-r {python,python_fastapi,javascript,typescript,java}] [-f FROM_YEAR] [-t TO_YEAR] [-m] [-v] repo
 
 Command line for GitEvo
 
 positional arguments:
-  repo                  Git repository to analyze. Accepts a Git URL, a path to a local repository, or a directory containing multiple Git
-                        repositories
+  repo                  Git repository to analyze. Accepts a Git URL, a local Git repository, or a directory containing multiple Git
+                        repositories. Example: gitevo https://github.com/pallets/flask
 
 options:
   -h, --help            show this help message and exit
-  -r {python,js,ts,java,fastapi}, --report-type {python,js,ts,java,fastapi}
-                        Report type to be generated. Default is python.
+  -r {python,python_fastapi,javascript,typescript,java}, --report {python,python_fastapi,javascript,typescript,java}
+                        Report to be generated. Default is python.
   -f FROM_YEAR, --from-year FROM_YEAR
                         Filter commits to be analyzed (from year). Default is today - 5 years.
   -t TO_YEAR, --to-year TO_YEAR
                         Filter commits to be analyzed (to year).
   -m, --month           Set to analyze commits by month.
-  -l, --last-version-only
-                        Set to analyze the last version only.
   -v, --version         Show the GitEvo version.
 ```
