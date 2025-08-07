@@ -31,7 +31,7 @@ def parse_args(args=None):
         '-f',
         '--from-year',
         type=int,
-        help='Filter commits to be analyzed (from year). Default is today - 5 years.'
+        help='Filter commits to be analyzed (from year). Default is last five years.'
     )
 
     parser.add_argument(
