@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "gitevo"
-version = "0.1.2"
+version = "0.1.3"
 description = "Code evolution analysis for Git repositories"
 authors = [
   { name="Andre Hora", email="andrehoraa@gmail.com" },
