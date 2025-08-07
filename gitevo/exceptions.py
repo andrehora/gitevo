@@ -1,7 +1,7 @@
-class FileExtensionNotFound(Exception):
+class BadGitRepo(Exception):
     pass
 
-class BadAggregate(Exception):
+class FileExtensionNotFound(Exception):
     pass
 
 class BadReturnType(Exception):
@@ -10,14 +10,11 @@ class BadReturnType(Exception):
 class BadDateUnit(Exception):
     pass
 
+class BadYearRange(Exception):
+    pass
+
 class BadLOCAggregate(Exception):
     pass
 
-class BadGitRepo(Exception):
-    pass
-
 class BadVersionChart(Exception):
-    pass
-
-class BadYearRange(Exception):
     pass

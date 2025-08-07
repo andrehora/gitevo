@@ -63,35 +63,6 @@ class GitEvo:
         self.registered_metrics: list[MetricInfo] = []
         self._analyzed_commits: list[str] = []
 
-    # def add_language(self, extension: str, tree_sitter_language: object):
-    #     miner = GenericMiner
-    #     miner.extension = extension
-    #     miner.tree_sitter_language = tree_sitter_language
-    #     self._repo.add_miner(miner)
-    
-    def run(self) -> GitEvoResult | list[GitEvoResult]:
-        print(f'Running GitEvo...')
-        results = []
-        for git_repo in self.git_repos:
-            print('Processing repository:', git_repo)
-            result = self._compute_metrics(git_repo)
-            results.append(result)
-            self._export_html(result)
-            self._export_csv(result)
-        return results
-                
-    def _export_html(self, result: GitEvoResult):
-        if not self.export_html_report:
-            return
-        path = HtmlReport(result).export_html()
-        print(self._write_msg('HTML', path))
-
-    def _export_csv(self, result: GitEvoResult):
-        if not self.export_csv_report:
-            return
-        path = TableReport(result).export_csv()
-        print(self._write_msg('CSV', path))
-
     # metric decorator
     def metric(self, name: str = None,
                *,
@@ -115,31 +86,55 @@ class GitEvo:
             return func
         
         return decorator
-    
-    def _compute_metrics(self, git_repository: str) -> GitEvoResult:
 
-        tree_miner_repo = TreeMinerRepo(git_repository)
+    # def add_language(self, extension: str, tree_sitter_language: object):
+    #     miner = GenericMiner
+    #     miner.extension = extension
+    #     miner.tree_sitter_language = tree_sitter_language
+    #     self._repo.add_miner(miner)
+    
+    def run(self) -> GitEvoResult | list[GitEvoResult]:
+        print(f'Running GitEvo...')
+        results = []
+        for git_repo in self.git_repos:
+            print('Processing repository:', git_repo)
+            try:
+                result = self._process_repository(git_repo)
+                results.append(result)
+            except (FileExtensionNotFound, BadReturnType, BadDateUnit, BadYearRange, BadLOCAggregate, BadVersionChart) as e:
+                raise
+            except Exception as e:
+                print(f'Error processing {git_repo}: {e}')
+                continue
+        return results
+    
+    def _process_repository(self, git_repo: str) -> GitEvoResult:
+        result = self._compute_metrics(git_repo)
+        self._export_html(result)
+        self._export_csv(result)
+        return result
+    
+    def _compute_metrics(self, git_repo: str) -> GitEvoResult:
+
+        mine_repo = TreeMinerRepo(git_repo)
         gitevo_result = GitEvoResult(self.report_title, self.report_filename, self.date_unit, self.registered_metrics)
         
-        # Sanity checks on registered_metrics
         for metric_info in self.registered_metrics:
-
+            # Sanity checks on registered_metrics
             self._check_registered_metrics(metric_info)
-
             if metric_info.file_extension is None:
                 metric_info.file_extension = self.global_file_extension
-            
             # Real names of the categorical metrics are known only at runtime, thus, now register None
             gitevo_result.add_metric_group(metric_info.name_or_none_for_categorical, metric_info.group)
-        
-        project_name = None
-        project_commits = set()
 
         project_result = ProjectResult()
         gitevo_result.project_result = project_result
 
-        for commit in tree_miner_repo.commits:
-            
+        project_name = None
+        project_commits = set()
+
+        for commit in mine_repo.commits:
+
             if project_name is None:
                 project_name = commit.project_name
                 project_result.name = project_name
@@ -260,6 +255,18 @@ class GitEvo:
             
     def _all_file_extensions(self) -> set[str]:
         return set([metric_info.file_extension for metric_info in self.registered_metrics])
+    
+    def _export_html(self, result: GitEvoResult):
+        if not self.export_html_report:
+            return
+        path = HtmlReport(result).export_html()
+        print(self._write_msg('HTML', path))
+
+    def _export_csv(self, result: GitEvoResult):
+        if not self.export_csv_report:
+            return
+        path = TableReport(result).export_csv()
+        print(self._write_msg('CSV', path))
     
 class ParsedFile:
 
