@@ -1,13 +1,14 @@
 ## Version 0.1.4
 Unreleased
+- Improve `cli` messages.
 
 ## Version 0.1.3
 Released 2025-08-07
-- Add CSV report
-- Change default report name to 'report_<project_name>'
-- Improve tests
-- Improve exception handling
-- Remove aggregate, last_version_only, and before
+- Add CSV report.
+- Change default report name to 'report_<project_name>'.
+- Improve tests.
+- Improve exception handling.
+- Remove aggregate, last_version_only, and before.
 
 ## Version 0.1.2
 Released 2025-04-22
