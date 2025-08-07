@@ -61,7 +61,6 @@ $ gitevo -r python .
 
 ```
 $ gitevo --help
-gitevo % gitevo --help
 usage: gitevo [-h] [-r {python,python_fastapi,javascript,typescript,java}] [-f FROM_YEAR] [-t TO_YEAR] [-m] [-v] repo
 
 Command line for GitEvo

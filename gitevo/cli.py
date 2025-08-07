@@ -13,7 +13,7 @@ def parse_args(args=None):
     parser = argparse.ArgumentParser(description='Command line for GitEvo')
 
     parser.add_argument(
-        'repo',
+        'git_repo',
         type=str,
         help='Git repository to analyze. Accepts a Git URL, a local Git repository, or a directory containing multiple Git repositories. Example: gitevo https://github.com/pallets/flask'
     )
@@ -71,7 +71,7 @@ class GitEvoCLI:
 
         parsed_args = parse_args(args)
 
-        self.repo = parsed_args.repo
+        self.git_repo = parsed_args.git_repo
         self.report = parsed_args.report
         self.from_year = parsed_args.from_year
         self.to_year = parsed_args.to_year
@@ -83,10 +83,10 @@ class GitEvoCLI:
     def run(self):
 
         report = report_mappings.get(self.report)
-        evo = GitEvo(repo=self.repo, 
-                     extension=report.extension, 
-                     from_year=self.from_year, 
-                     to_year=self.to_year, 
+        evo = GitEvo(repo=self.git_repo,
+                     extension=report.extension,
+                     from_year=self.from_year,
+                     to_year=self.to_year,
                      date_unit=self.date_unit)
         report.metrics(evo)
         evo.run()
