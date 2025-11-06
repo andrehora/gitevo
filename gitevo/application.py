@@ -15,11 +15,46 @@ from gitevo.report_csv import TableReport
 from gitevo.utils import is_git_dir, stdout_msg, stdout_link, as_str, aggregate_stat, ensure_file_extension
 from gitevo.exceptions import *
 
+"""
+This module contains the main GitEvo classes: GitEvo, ParsedCommit, and ParsedFile.
+It provides functionality to analyze Git repositories, compute metrics, and generate reports.
+
+See: https://github.com/andrehora/gitevo/tree/main/examples
+
+Example:
+
+    from gitevo import GitEvo, ParsedCommit
+
+    git_url = 'https://github.com/pallets/flask'
+    evo = GitEvo(repo=git_url, extension='.py')
+
+    @evo.metric('Lines of code (LOC)')
+    def loc(commit: ParsedCommit):
+        return commit.loc
+
+    @evo.metric('Python files')
+    def python_files(commit: ParsedCommit):
+        return len(commit.parsed_files)
+
+    @evo.metric('Test files')
+    def test_files(commit: ParsedCommit):
+        test_files = [f for f in commit.parsed_files if 'test_' in f.name.lower()]
+        return len(test_files)
+
+    @evo.metric('LOC / Python files')
+    def loc_per_file(commit: ParsedCommit):
+        python_files = len(commit.parsed_files)
+        if python_files == 0: return 0
+        return commit.loc / python_files
+
+    evo.run()
+
+"""
 
 class GitEvo:
 
     """
-    GitEvo app class, the main entrypoint to use GitEvo.
+    GitEvo main class, the entrypoint to use GitEvo.
 
     Args:
         repo (str): Git repository URL or local path
@@ -182,7 +217,7 @@ class GitEvo:
             project_commits.add(selected_date)
 
             # Chache parsed commits for each file extension, eg, .py, .js, .java, etc
-            parsed_commits = ParsedCommitCache(commit, self._all_file_extensions())
+            parsed_commits = _ParsedCommitCache(commit, self._all_file_extensions())
             print(f'- Date: {selected_date}, commit: {commit.hash[0:10]}, files: {parsed_commits.file_stats()}')
 
             # Iterate on each metric
@@ -298,6 +333,10 @@ class GitEvo:
     
 class ParsedFile:
 
+    """
+    Represents a parsed file in a commit, containing its name, path, tree-sitter nodes, and lines of code (LOC).
+    """
+
     def __init__(self, name: str, path: str, nodes: list[Node], loc: int):
         self.name = name
         self.path = path
@@ -305,7 +344,12 @@ class ParsedFile:
         self.loc = loc
     
 class ParsedCommit:
-    
+
+    """
+    Represents a parsed commit in a repository, containing its hash, date, file extension, parsed files,
+    tree-sitter nodes, and lines of code (LOC).
+    """
+
     def __init__(self, hash: str, date: datetime, file_extension: str, parsed_files: list[ParsedFile]):
         self.hash = hash
         self.date = date
@@ -316,27 +360,63 @@ class ParsedCommit:
 
     @property
     def parsed_files(self) -> list[ParsedFile]:
+        """
+        Returns the list of parsed files in the commit.
+        Returns:
+            list[ParsedFile]: The list of parsed files.
+        """
         return self._parsed_files
 
     @property
     def nodes(self) -> list[Node]:
+        """
+        Returns the list of tree-sitter nodes in the commit.
+        Returns:
+            list[Node]: The list of nodes.
+        """
         if self._nodes is None:
             self._nodes = [node for file in self.parsed_files for node in file.nodes]
         return self._nodes
     
-    def count_nodes(self, node_types: str | list[str] | None = None) -> int:
-        if node_types is None:
-            return len(self.nodes)
-        return len(self.find_nodes_by_type(node_types))
-    
     @property
     def loc(self) -> int:
+        """
+        Returns the total lines of code (LOC) in the commit.
+        Returns:
+            int: The total LOC.
+        """
         if self._loc is None:
             self._loc = sum([file.loc for file in self.parsed_files])
         return self._loc
-    
-    def loc_by_type(self, node_type: str, aggregate: str = 'median') -> int | float | list[int]:
 
+    def count_nodes(self, node_types: str | list[str] | None = None) -> int:
+        """
+        Counts the number of tree-sitter nodes in the commit, optionally filtered by node types.
+
+        See node types examples at:
+        https://github.com/tree-sitter/tree-sitter-python/blob/master/src/node-types.json
+        https://github.com/tree-sitter/tree-sitter-javascript/blob/master/src/node-types.json
+        https://github.com/tree-sitter/tree-sitter-typescript/blob/master/typescript/src/node-types.json
+        https://github.com/tree-sitter/tree-sitter-java/blob/master/src/node-types.json
+
+        Returns:
+            int: The count of nodes.
+        """
+        if node_types is None:
+            return len(self.nodes)
+        return len(self.find_nodes_by_type(node_types))
+
+    def loc_by_type(self, node_type: str, aggregate: str = 'median') -> int | float:
+        """
+        Calculates the lines of code (LOC) for nodes of a specific type, using the specified aggregation method.
+        Args:
+            node_type (str): The type of node to calculate LOC for.
+            aggregate (str): The aggregation method to use ('median', 'mean', 'mode').
+        Returns:
+            int | float: The aggregated LOC value.
+        Raises:
+            BadLOCAggregate: If the aggregate method is invalid.
+        """
         if aggregate is not None and aggregate not in ['median', 'mean', 'mode']:
             raise BadLOCAggregate(f'LOC aggregate should be median, mean, or mode')
         
@@ -348,6 +428,13 @@ class ParsedCommit:
         return aggregate_stat(locs, aggregate)
     
     def find_node_types(self, node_types: str | list[str] = None) -> list[str]:
+        """
+        Finds the types of tree-sitter nodes in the commit, optionally filtered by node types.
+        Args:
+            node_types (str | list[str], optional): The node types to filter by.
+        Returns:
+            list[str]: The list of node types.
+        """
         if node_types is None:
             return [node.type for node in self.nodes]
 
@@ -357,16 +444,36 @@ class ParsedCommit:
         return [node.type for node in self.nodes if node.type in node_types]
     
     def find_nodes_by_type(self, node_types: str | list[str]) -> list[Node]:
-
+        """
+        Finds the tree-sitter nodes in the commit by their types.
+        Args:
+            node_types (str | list[str]): The node types to filter by.
+        Returns:
+            list[Node]: The list of nodes.
+        """
         if isinstance(node_types, str):
             node_types = [node_types]
 
         return [node for node in self.nodes if node.type in node_types]
     
     def named_children_for(self, node: Node) -> list[Node]:
+        """
+        Returns the named children of a given tree-sitter node.
+        Args:
+            node (Node): The tree-sitter node.
+        Returns:
+            list[Node]: The list of named child nodes.
+        """
         return [each for each in node.children if each.is_named]
     
     def descendant_nodes_for(self, node: Node) -> list[Node]:
+        """
+        Returns the descendant nodes of a given tree-sitter node.
+        Args:
+            node (Node): The tree-sitter node.
+        Returns:
+            list[Node]: The list of descendant nodes.
+        """
         descendants = []
         def traverse_node(current_node):
             descendants.append(current_node)
@@ -377,13 +484,21 @@ class ParsedCommit:
         return descendants
     
     def descendant_node_by_field_name(self, node: Node, name: str) -> Node | None:
+        """
+        Finds a descendant node of a given tree-sitter node by its field name.
+        Args:
+            node (Node): The tree-sitter node.
+            name (str): The field name to search for.
+        Returns:
+            Node | None: The descendant node with the specified field name, or None if not found.
+        """
         for desc_node in self.descendant_nodes_for(node):
             target_node = desc_node.child_by_field_name(name)
             if target_node is not None:
                 return target_node
         return None
 
-class ParsedCommitCache:
+class _ParsedCommitCache:
 
     def __init__(self, commit: Commit, file_extensions: list[str]):
         self.commit = commit
