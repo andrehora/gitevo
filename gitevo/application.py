@@ -14,8 +14,28 @@ from gitevo.report_html import HtmlReport
 from gitevo.report_csv import TableReport
 from gitevo.utils import is_git_dir, stdout_msg, stdout_link, as_str, aggregate_stat, ensure_file_extension
 from gitevo.exceptions import *
-          
+
+
 class GitEvo:
+
+    """
+    GitEvo app class, the main entrypoint to use GitEvo.
+
+    Args:
+        repo (str): Git repository URL or local path
+        extension (str | None): File extension to analyze, eg, .py, .ts, .js, or .java
+        from_year (int | None): Start year for analysis (default: current year - 5)
+        to_year (int | None): End year for analysis (default: current year)
+        date_unit (str): Date unit for analysis, either 'year' or 'month' (default: 'year')
+        export_html (bool): Whether to export HTML report (default: True)
+        export_csv (bool): Whether to export CSV report (default: True)
+        report_filename (str | None): Custom report filename (default: None)
+        report_title (str | None): Custom report title (default: None)
+    Raises:
+        BadGitRepo: If the repository is invalid
+        BadDateUnit: If the date_unit is invalid
+        BadYearRange: If from_year is greater than to_year
+    """
 
     def __init__(self,
                 *,
@@ -92,8 +112,16 @@ class GitEvo:
     #     miner.extension = extension
     #     miner.tree_sitter_language = tree_sitter_language
     #     self._repo.add_miner(miner)
-    
+
     def run(self) -> GitEvoResult | list[GitEvoResult]:
+        
+        """
+        Run GitEvo analysis on the provided repository or repositories.
+        
+        Returns:
+            GitEvoResult | list[GitEvoResult]: The analysis result(s) for the repository or repositories.
+        """
+
         print(f'Running GitEvo...')
         results = []
         for git_repo in self.git_repos:

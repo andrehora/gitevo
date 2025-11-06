@@ -1,4 +1,6 @@
 
+import pytest
+
 from git import Repo
 from gitevo import GitEvo
 from tests.conftest import remove_folder_if_exists

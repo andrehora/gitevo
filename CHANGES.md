@@ -1,6 +1,7 @@
 ## Version 0.1.4
 Unreleased
 - Improve `cli` messages.
+- Improve API documentation.
 
 ## Version 0.1.3
 Released 2025-08-07
