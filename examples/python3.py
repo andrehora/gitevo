@@ -1,8 +1,15 @@
 from gitevo import GitEvo, ParsedCommit
 
 
-evo = GitEvo(repo='../projects/python/flask', extension='.py', 
-             report_filename='flask', from_year=2015, date_unit='year')
+remote = 'https://github.com/pallets/flask'
+# remote = 'https://github.com/fastapi/fastapi'
+# remote = 'https://github.com/django/django'
+# remote = 'https://github.com/pytest-dev/pytest'
+# remote = 'https://github.com/pandas-dev/pandas'
+# remote = 'https://github.com/pytorch/pytorch'
+# remote = 'https://github.com/numpy/numpy'
+
+evo = GitEvo(repo=remote, extension='.py')
 
 @evo.metric('Lines of code (LOC)', show_version_chart=False)
 def files(commit: ParsedCommit):

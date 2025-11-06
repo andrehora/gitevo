@@ -1,9 +1,13 @@
 from gitevo import GitEvo, ParsedCommit
 
 
-evo = GitEvo(report_title='TypeScript', report_filename='vscode', 
-             repo='../projects/typescript/vscode', extension='.ts',
-             date_unit='year', from_year=2020)
+remote = 'https://github.com/vuejs/core'
+# remote = 'https://github.com/microsoft/vscode'
+# remote = 'https://github.com/angular/angular'
+# remote = 'https://github.com/microsoft/playwright'
+# remote = 'https://github.com/storybookjs/storybook'
+
+evo = GitEvo(repo=remote, extension='.ts')
 
 @evo.metric('TypeScript files', show_version_chart=False)
 def files(commit: ParsedCommit):

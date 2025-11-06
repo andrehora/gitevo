@@ -1,9 +1,13 @@
 from gitevo import GitEvo, ParsedCommit
 
 
-evo = GitEvo(report_title='JavaScript', report_filename='svelte', 
-             repo='../projects/javascript/svelte', extension='.js', 
-             date_unit='year', from_year=2020)
+remote = 'https://github.com/expressjs/express'
+# remote = 'https://github.com/facebook/react'
+# remote = 'https://github.com/vercel/next.js'
+# remote = 'https://github.com/sveltejs/svelte'
+# remote = 'https://github.com/nodejs/node'
+
+evo = GitEvo(repo=remote, extension='.js')
 
 @evo.metric('JavaScript files', show_version_chart=False)
 def files(commit: ParsedCommit):
@@ -21,8 +25,6 @@ def dataclass(commit: ParsedCommit):
 def namedtuple(commit: ParsedCommit):
     return commit.count_nodes('===')
 
-
-
 @evo.metric('var total', group='let vs. var (total)')
 def dataclass(commit: ParsedCommit):
     return commit.count_nodes(['var'])
@@ -30,8 +32,6 @@ def dataclass(commit: ParsedCommit):
 @evo.metric('let total', group='let vs. var (total)')
 def namedtuple(commit: ParsedCommit):
     return commit.count_nodes(['let'])
-
-
 
 @evo.metric('var', group='let vs. var')
 def variable_declarations(commit: ParsedCommit):
