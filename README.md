@@ -4,6 +4,7 @@
 
 Code evolution analysis for Git repositories.
 It currently supports Python, JavaScript, TypeScript, and Java.
+GitEvo can also be used to define custom code evolution metrics at the level of the concrete syntax tree (CST), thanks to [Tree-sitter](https://tree-sitter.github.io/tree-sitter).
 
 Examples of reports: 
 [Flask](https://andrehora.github.io/gitevo-examples/python/flask.html),
@@ -57,7 +58,7 @@ $ git clone https://github.com/pallets/click
 $ gitevo -r python .
 ```
 
-## Command line arguments
+### Command-line arguments
 
 ```
 $ gitevo --help
@@ -81,7 +82,7 @@ options:
   -v, --version         Show the GitEvo version.
 ```
 
-## Defining Custom Metrics
+## Defining custom metrics
 
 GitEvo can be used to define custom code evolution metrics at the level of the concrete syntax tree (CST), thanks to [Tree-sitter](https://tree-sitter.github.io/tree-sitter).
 GitEvo provides three key classes that can be used in the scripts: `GitEvo`, `ParsedCommit`, and `ParsedFile`.
