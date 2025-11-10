@@ -24,7 +24,7 @@ See more examples: [gitevo-examples](https://github.com/andrehora/gitevo-example
 pip install gitevo
 ```
 
-## Usage
+## Usage via command-line
 
 Analyzing the evolution of a Git repository:
 
@@ -79,4 +79,95 @@ options:
                         Filter commits to be analyzed (to year).
   -m, --month           Set to analyze commits by month.
   -v, --version         Show the GitEvo version.
+```
+
+## Defining Custom Metrics
+
+GitEvo can be used to define custom code evolution metrics at the level of the concrete syntax tree (CST).
+GitEvo provides three key classes that can be used in the scripts: `GitEvo`, `ParsedCommit`, and `ParsedFile`.
+
+- `GitEvo` is the main class, the entry point to use the tool.
+It receives as input the repository, file extension, date unit for analysis, and start/end year for analysis.
+
+- Metrics are defined in functions decorated with `@evo.metric()`.
+
+- `ParsedCommit` represents a parsed commit and contains (1) a list of `ParsedFile` and (2) a list of [`tree_sitter.Node`](https://tree-sitter.github.io/py-tree-sitter/classes/tree_sitter.Node.html).
+
+- `ParsedFile` represents a parsed file in a commit, including properties as name, path, and tree-sitter nodes.
+
+### Examples
+
+#### Basic metrics
+
+```python
+from gitevo import GitEvo, ParsedCommit
+
+remote = 'https://github.com/pallets/flask'
+evo = GitEvo(repo=remote, extension='.py')
+
+@evo.metric('Lines of code (LOC)')
+def loc(commit: ParsedCommit):
+    return commit.loc
+
+@evo.metric('Python files')
+def python_files(commit: ParsedCommit):
+    return len(commit.parsed_files)
+
+@evo.metric('Test files')
+def test_files(commit: ParsedCommit):
+    test_files = [f for f in commit.parsed_files if 'test_' in f.name.lower()]
+    return len(test_files)
+
+@evo.metric('LOC / Python files')
+def loc_per_file(commit: ParsedCommit):
+    python_files = len(commit.parsed_files)
+    if python_files == 0: return 0
+    return commit.loc / python_files
+
+evo.run()
+```
+
+#### Metrics based on node types
+
+```python
+from gitevo import GitEvo, ParsedCommit
+
+remote = 'https://github.com/pallets/flask'
+evo = GitEvo(repo=remote, extension='.py')
+
+@evo.metric('Data structures', categorical=True)
+def data_structures(commit: ParsedCommit):
+    data_structure_types = ['dictionary', 'list', 'set', 'tuple']
+    return commit.find_node_types(data_structure_types)
+
+@evo.metric('Loops', categorical=True)
+def loops(commit: ParsedCommit):
+    loop_types = ['for_statement', 'while_statement', 'for_in_clause']
+    return commit.find_node_types(loop_types)
+
+evo.run()
+```
+
+#### Metrics based on node content
+
+```python
+from gitevo import GitEvo, ParsedCommit
+
+remote = 'https://github.com/pallets/flask'
+evo = GitEvo(repo=remote, extension='.py')
+
+@evo.metric('Async functions')
+def async_functions(commit: ParsedCommit):
+    functions = commit.find_nodes_by_type(['function_definition'])
+    async_functions = [f for f in functions if as_str(f.child(0).text) == 'async']
+    return len(async_functions)
+
+@evo.metric('@pytest decorated functions')
+def decorated_functions(commit: ParsedCommit):
+    decorators = commit.find_nodes_by_type(['decorated_definition'])
+    decorated_functions = [d for d in decorators if d.child_by_field_name('definition').type == 'function_definition']
+    pytest_decorated = [dc for dc in decorated_functions if as_str(dc.child(0).text).startswith('@pytest')]
+    return len(pytest_decorated)
+
+evo.run()
 ```
