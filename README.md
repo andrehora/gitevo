@@ -175,7 +175,12 @@ evo.run()
 
 #### More examples
 
-See: https://github.com/andrehora/gitevo/tree/main/examples
+All: https://github.com/andrehora/gitevo/tree/main/examples
+Python: https://github.com/andrehora/gitevo/blob/main/examples/python.py
+JS: https://github.com/andrehora/gitevo/blob/main/examples/javascript.py
+TS: https://github.com/andrehora/gitevo/blob/main/examples/typescript.py
+Java: https://github.com/andrehora/gitevo/blob/main/examples/java.py
+FastAPI: https://github.com/andrehora/gitevo/blob/main/examples/fastapi.py
 
 #### More info about `tree_sitter.Node`
 
