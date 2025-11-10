@@ -85,7 +85,7 @@ options:
 ## Defining custom metrics
 
 GitEvo can be used to define custom code evolution metrics at the level of the concrete syntax tree (CST), thanks to [Tree-sitter](https://tree-sitter.github.io/tree-sitter).
-GitEvo provides three key classes that can be used in the scripts: `GitEvo`, `ParsedCommit`, and `ParsedFile`.
+GitEvo provides three key classes: `GitEvo`, `ParsedCommit`, and `ParsedFile`.
 
 - `GitEvo` is the main class, the entry point to use the tool.
 It receives as input the repository, file extension, date unit for analysis, and start/end year for analysis.
