@@ -83,7 +83,7 @@ options:
 
 ## Defining Custom Metrics
 
-GitEvo can be used to define custom code evolution metrics at the level of the concrete syntax tree (CST).
+GitEvo can be used to define custom code evolution metrics at the level of the concrete syntax tree (CST), thanks to [Tree-sitter](https://tree-sitter.github.io/tree-sitter).
 GitEvo provides three key classes that can be used in the scripts: `GitEvo`, `ParsedCommit`, and `ParsedFile`.
 
 - `GitEvo` is the main class, the entry point to use the tool.
@@ -171,3 +171,15 @@ def decorated_functions(commit: ParsedCommit):
 
 evo.run()
 ```
+
+#### More examples
+
+See: https://github.com/andrehora/gitevo/tree/main/examples
+
+#### More info about `tree_sitter.Node`
+
+- `tree_sitter.Node` documentation: https://tree-sitter.github.io/py-tree-sitter/classes/tree_sitter.Node.html
+- Python node types: https://github.com/tree-sitter/tree-sitter-python/blob/master/src/node-types.json
+- JS node types: https://github.com/tree-sitter/tree-sitter-javascript/blob/master/src/node-types.json
+- TS node types: https://github.com/tree-sitter/tree-sitter-typescript/blob/master/typescript/src/node-types.json
+- Java node types: https://github.com/tree-sitter/tree-sitter-java/blob/master/src/node-types.json
